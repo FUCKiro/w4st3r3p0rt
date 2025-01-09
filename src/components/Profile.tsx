@@ -38,7 +38,11 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
   const loadProfile = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      if (!user) {
+        setProfile(null);
+        setLoading(false);
+        return;
+      }
 
       // Get user metadata
       const { data: metadata } = await supabase.auth.getUser();
@@ -82,9 +86,10 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
       }
 
       setUsername(username);
+      setError(null);
     } catch (error) {
       console.error('Error loading profile:', error);
-      setError('Failed to load profile');
+      setError('Errore nel caricamento del profilo. Riprova più tardi.');
     } finally {
       setLoading(false);
     }
@@ -114,9 +119,11 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
+      setProfile(null);
+      onClose();
     } catch (error) {
       console.error('Error signing out:', error);
-      setError('Failed to sign out');
+      setError('Errore durante la disconnessione. Riprova più tardi.');
     }
   };
 
