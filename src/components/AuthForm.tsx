@@ -22,7 +22,7 @@ export function AuthForm() {
         });
         if (error) throw error;
       } else {
-        const { error } = await supabase.auth.signUp({
+        const { data: { user }, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -32,6 +32,24 @@ export function AuthForm() {
           },
         });
         if (error) throw error;
+
+        // Create initial user stats
+        if (user) {
+          const { error: statsError } = await supabase
+            .from('user_stats')
+            .insert({
+              user_id: user.id,
+              xp: 0,
+              level: 1,
+              reports_submitted: 0,
+              reports_verified: 0,
+              badges: ['{}']
+            });
+          
+          if (statsError) {
+            console.error('Error creating user stats:', statsError);
+          }
+        }
       }
     } catch (err) {
       setError((err as Error).message);

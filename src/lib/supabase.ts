@@ -29,3 +29,47 @@ export interface WasteReport {
   created_at: string;
   updated_at: string;
 }
+
+export interface UserStats {
+  user_id: string;
+  xp: number;
+  level: number;
+  reports_submitted: number;
+  reports_verified: number;
+  badges: string[];
+  created_at: string;
+  updated_at: string;
+}
+
+export const BADGES = {
+  FIRST_REPORT: {
+    id: 'first_report',
+    name: 'Primo Passo',
+    description: 'Hai fatto la tua prima segnalazione',
+    icon: '🌱'
+  },
+  FIVE_REPORTS: {
+    id: 'five_reports',
+    name: 'Sentinella',
+    description: 'Hai fatto 5 segnalazioni',
+    icon: '👀'
+  },
+  TEN_REPORTS: {
+    id: 'ten_reports',
+    name: 'Guardiano',
+    description: 'Hai fatto 10 segnalazioni',
+    icon: '🛡️'
+  },
+  FIRST_VERIFICATION: {
+    id: 'first_verification',
+    name: 'Verificatore',
+    description: 'Hai verificato la tua prima segnalazione',
+    icon: '✅'
+  },
+  FIVE_VERIFICATIONS: {
+    id: 'five_verifications',
+    name: 'Ispettore',
+    description: 'Hai verificato 5 segnalazioni',
+    icon: '🔍'
+  }
+};

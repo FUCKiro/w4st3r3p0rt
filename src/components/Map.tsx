@@ -5,7 +5,23 @@ import { Trash2, Sofa, AlertTriangle, Trash, Leaf, Package, Car, Truck, Building
 import { supabase } from '../lib/supabase';
 import type { WasteReport } from '../lib/supabase';
 import type { User } from '@supabase/supabase-js';
-import { icon, divIcon, latLng } from 'leaflet';
+import { icon, divIcon, latLng, LatLng } from 'leaflet';
+
+// Function to calculate distance between two points in meters
+function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371e3; // Earth's radius in meters
+  const φ1 = lat1 * Math.PI/180;
+  const φ2 = lat2 * Math.PI/180;
+  const Δφ = (lat2-lat1) * Math.PI/180;
+  const Δλ = (lon2-lon1) * Math.PI/180;
+
+  const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+          Math.cos(φ1) * Math.cos(φ2) *
+          Math.sin(Δλ/2) * Math.sin(Δλ/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+  return R * c;
+}
 
 // Custom marker for user location
 const userLocationIcon = divIcon({
@@ -55,12 +71,23 @@ const getWasteIcon = (type: number) => {
 function LocationMarker() {
   const [position, setPosition] = useState<[number, number] | null>(null);
   const map = useMap();
+  const [hasInitialLocation, setHasInitialLocation] = useState(false);
 
   useEffect(() => {
-    map.locate().on("locationfound", (e) => {
-      setPosition([e.latlng.lat, e.latlng.lng]);
-      map.flyTo(e.latlng, 13);
-    });
+    if (!hasInitialLocation) {
+      map.locate({
+        setView: true,
+        maxZoom: 16,
+        enableHighAccuracy: true
+      }).on("locationfound", (e) => {
+        setPosition([e.latlng.lat, e.latlng.lng]);
+        setHasInitialLocation(true);
+      }).on("locationerror", (e) => {
+        console.error("Error getting location:", e);
+        // Fallback to default location (Italy)
+        map.setView([41.9028, 12.4964], 6);
+      });
+    }
   }, [map]);
 
   return position === null ? null : (
@@ -146,6 +173,8 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
   const [notes, setNotes] = useState('');
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [nearbyReports, setNearbyReports] = useState<WasteReport[]>([]);
+  const RADIUS = 250; // 250 meters radius
 
   useEffect(() => {
     loadReports();
@@ -177,20 +206,38 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
       const { data, error } = await supabase
         .from('waste_reports')
         .select('*');
+        
       if (error) throw error;
-      setReports(data || []);
+      
+      // Filter reports within radius if user location is available
+      if (userLocation) {
+        const filtered = (data || []).filter(report => {
+          const distance = calculateDistance(
+            userLocation[0],
+            userLocation[1],
+            report.latitude,
+            report.longitude
+          );
+          return distance <= RADIUS;
+        });
+        setNearbyReports(filtered);
+      }
     } catch (error) {
       console.error('Error loading reports:', error);
     }
   };
 
+  // Update nearby reports when user location changes
+  useEffect(() => {
+    if (userLocation) {
+      loadReports();
+    }
+  }, [userLocation]);
+
   const verifyReport = async (reportId: string, isStillPresent: boolean) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        console.error('User not authenticated');
-        return;
-      }
+      if (!user) throw new Error('Not authenticated');
 
       const { error } = await supabase
         .from('waste_reports')
@@ -199,10 +246,42 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
           updated_at: new Date().toISOString()
         })
         .eq('id', reportId);
+      
+      if (error) throw error;
 
-      if (error) {
-        console.error('Error updating report:', error);
-        return;
+      const { data: stats } = await supabase
+        .from('user_stats')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+
+      if (!stats) {
+        await supabase.from('user_stats').insert({
+          user_id: user.id,
+          xp: 2,
+          level: 1,
+          reports_submitted: 0,
+          reports_verified: 1,
+          badges: ['first_verification']
+        });
+      } else {
+        const newXP = stats.xp + 2;
+        const newLevel = Math.floor(newXP / 100) + 1;
+        const newBadges = [...stats.badges];
+
+        if (stats.reports_verified + 1 === 5) {
+          newBadges.push('five_verifications');
+        }
+
+        await supabase
+          .from('user_stats')
+          .update({
+            xp: newXP,
+            level: newLevel,
+            reports_verified: stats.reports_verified + 1,
+            badges: newBadges
+          })
+          .eq('user_id', user.id);
       }
 
       loadReports();
@@ -218,6 +297,7 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
+      // Submit the report
       const { error } = await supabase.from('waste_reports').insert({
         user_id: user.id,
         latitude: userLocation[0],
@@ -230,9 +310,63 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
 
       if (error) throw error;
 
+      // Update user stats
+      const { data: stats } = await supabase
+        .from('user_stats')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+
+      if (!stats) {
+        // Create new stats for first-time user
+        const initialBadges = ['first_report'];
+        await supabase.from('user_stats').insert({
+          user_id: user.id,
+          xp: 10,
+          level: 1,
+          reports_submitted: 1,
+          reports_verified: 0,
+          badges: initialBadges
+        });
+      } else {
+        const newXP = stats.xp + 10;
+        const newLevel = Math.floor(newXP / 100) + 1;
+        const newReportsSubmitted = stats.reports_submitted + 1;
+        const newBadges = Array.isArray(stats.badges) ? [...stats.badges] : [];
+
+        // Check for new badges
+        if (!newBadges.includes('first_report')) {
+          newBadges.push('first_report');
+        }
+        if (newReportsSubmitted === 5 && !newBadges.includes('five_reports')) {
+          newBadges.push('five_reports');
+        }
+        if (newReportsSubmitted === 10 && !newBadges.includes('ten_reports')) {
+          newBadges.push('ten_reports');
+        }
+
+        const { error: updateError } = await supabase
+          .from('user_stats')
+          .update({
+            xp: newXP,
+            level: newLevel,
+            reports_submitted: newReportsSubmitted,
+            badges: newBadges
+          })
+          .eq('user_id', user.id);
+
+        if (updateError) {
+          console.error('Error updating user stats:', updateError);
+          throw updateError;
+        }
+      }
+
       setShowReportForm(false);
       setNotes('');
-      loadReports();
+      await loadReports();
+      // Ricarica il profilo per aggiornare le statistiche visualizzate
+      window.dispatchEvent(new Event('reload-profile'));
+      
     } catch (error) {
       console.error('Error submitting report:', error);
     }
@@ -241,8 +375,8 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
   return (
     <div className="h-screen relative">
       <MapContainer
-        center={[41.9028, 12.4964]}
-        zoom={13}
+        center={[0, 0]}
+        zoom={2}
         style={{ height: '100%', width: '100%' }}
       >
         <MapClickHandler onMapClick={() => setShowReportForm(false)} />
@@ -252,7 +386,7 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
         />
         <LocationMarker />
         <RecenterButton />
-        {reports.map((report) => (
+        {nearbyReports.map((report) => (
           <Marker
             key={report.id}
             position={[report.latitude, report.longitude]}

@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { AuthForm } from './AuthForm';
+import type { UserStats } from '../lib/supabase';
+import { BADGES } from '../lib/supabase';
 
 interface UserProfile {
   username: string;
   email: string;
-  reports_count?: number;
+  stats?: UserStats;
 }
 
 interface ProfileProps {
@@ -23,6 +25,14 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
 
   useEffect(() => {
     loadProfile();
+    
+    // Ascolta l'evento di ricaricamento del profilo
+    const handleReload = () => loadProfile();
+    window.addEventListener('reload-profile', handleReload);
+    
+    return () => {
+      window.removeEventListener('reload-profile', handleReload);
+    };
   }, []);
 
   const loadProfile = async () => {
@@ -34,17 +44,43 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
       const { data: metadata } = await supabase.auth.getUser();
       const username = metadata.user?.user_metadata?.username || '';
 
-      // Get reports count
-      const { count } = await supabase
-        .from('waste_reports')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', user.id);
+      // Get user stats
+      const { data: stats } = await supabase
+        .from('user_stats')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
 
-      setProfile({
-        username,
-        email: user.email!,
-        reports_count: count || 0
-      });
+      // If no stats exist yet, create default stats
+      if (!stats) {
+        const { data: newStats, error: createError } = await supabase
+          .from('user_stats')
+          .insert({
+            user_id: user.id,
+            xp: 0,
+            level: 1,
+            reports_submitted: 0,
+            reports_verified: 0,
+            badges: ['{}']
+          })
+          .select()
+          .single();
+
+        if (createError) throw createError;
+
+        setProfile({
+          username,
+          email: user.email!,
+          stats: newStats
+        });
+      } else {
+        setProfile({
+          username,
+          email: user.email!,
+          stats
+        });
+      }
+
       setUsername(username);
     } catch (error) {
       console.error('Error loading profile:', error);
@@ -195,11 +231,67 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Segnalazioni Inviate
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Statistiche
                   </label>
-                  <div className="mt-1 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                    {profile?.reports_count} segnalazioni
+                  <div className="space-y-4">
+                    <div className="bg-gray-50 rounded-lg border border-gray-200 p-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm text-gray-600">Livello {profile?.stats?.level || 1}</span>
+                        <span className="text-sm text-gray-600">{profile?.stats?.xp || 0} XP</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-green-600 h-2 rounded-full transition-all duration-500"
+                          style={{
+                            width: `${((profile?.stats?.xp || 0) % 100) / 100 * 100}%`
+                          }}
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-gray-50 rounded-lg border border-gray-200 p-4">
+                        <div className="text-2xl font-bold text-gray-900 mb-1">
+                          {profile?.stats?.reports_submitted || 0}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          Segnalazioni Inviate
+                        </div>
+                      </div>
+                      <div className="bg-gray-50 rounded-lg border border-gray-200 p-4">
+                        <div className="text-2xl font-bold text-gray-900 mb-1">
+                          {profile?.stats?.reports_verified || 0}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          Verifiche Effettuate
+                        </div>
+                      </div>
+                    </div>
+
+                    {profile?.stats?.badges && profile.stats.badges.length > 0 && (
+                      <div>
+                        <h3 className="text-sm font-medium text-gray-700 mb-2">Badge Ottenuti</h3>
+                        <div className="grid grid-cols-1 gap-2">
+                          {profile.stats.badges.filter(badge => badge !== '{}').map(badgeId => {
+                            const badge = BADGES[badgeId as keyof typeof BADGES];
+                            if (!badge) return null;
+                            return (
+                              <div
+                                key={badge.id}
+                                className="flex items-center p-3 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+                              >
+                                <span className="text-3xl mr-3">{badge.icon}</span>
+                                <div>
+                                  <div className="font-medium">{badge.name}</div>
+                                  <div className="text-sm text-gray-600">{badge.description}</div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
