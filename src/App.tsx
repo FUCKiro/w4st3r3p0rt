@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthForm } from './components/AuthForm';
+import { BrowserRouter } from 'react-router-dom';
 import { Map } from './components/Map';
 import { Profile } from './components/Profile';
 import { supabase } from './lib/supabase';
@@ -8,6 +7,7 @@ import { supabase } from './lib/supabase';
 function App() {
   const [session, setSession] = useState<any>(null);
   const [initialized, setInitialized] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -32,11 +32,17 @@ function App() {
   
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Map />} />
-        <Route path="/profile" element={session ? <Profile /> : <AuthForm />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <div className="relative h-screen">
+        <Map 
+          onProfileClick={() => setIsProfileOpen(true)} 
+          isProfileOpen={isProfileOpen}
+        />
+        <Profile 
+          isOpen={isProfileOpen} 
+          onClose={() => setIsProfileOpen(false)}
+          session={session}
+        />
+      </div>
     </BrowserRouter>
   );
 }

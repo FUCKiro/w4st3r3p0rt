@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { AuthForm } from './AuthForm';
 
 interface UserProfile {
   username: string;
@@ -8,7 +8,13 @@ interface UserProfile {
   reports_count?: number;
 }
 
-export function Profile() {
+interface ProfileProps {
+  isOpen: boolean;
+  onClose: () => void;
+  session: any;
+}
+
+export function Profile({ isOpen, onClose, session }: ProfileProps) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
@@ -87,110 +93,130 @@ export function Profile() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 relative">
-      <div className="max-w-lg mx-auto pt-12 px-4">
-        <Link
-          to="/"
-          className="absolute top-4 left-4 flex items-center text-green-600 hover:text-green-700"
-        >
-          <svg
-            className="w-5 h-5 mr-1"
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path d="M15 19l-7-7 7-7" />
-          </svg>
-          Torna alla Mappa
-        </Link>
-
-        <div className="bg-white rounded-lg shadow-lg p-6">
+    <>
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 transition-opacity z-[1999]"
+          onClick={onClose}
+        />
+      )}
+      <div 
+        className={`fixed inset-y-0 left-0 w-full sm:w-96 bg-white shadow-xl transform transition-transform duration-300 ease-in-out z-[2000] ${
+          isOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="h-full overflow-y-auto">
+          <div className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">Impostazioni Profilo</h1>
+            <h1 className="text-2xl font-bold text-gray-900">
+              {session ? 'Il tuo profilo' : 'Accedi'}
+            </h1>
+            <button
+              onClick={onClose}
+              className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+            >
+              <svg
+                className="w-6 h-6 text-gray-600"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
-        
-          {error && (
-            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg border border-red-200">
-              {error}
-            </div>
-          )}
 
-          <div className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Email
-              </label>
-              <div className="mt-1 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                {profile?.email}
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Nome Utente
-              </label>
-              {editing ? (
-                <div className="mt-1 flex space-x-2">
-                  <input
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="flex-1 p-2 border rounded-lg focus:ring-green-500 focus:border-green-500"
-                  />
-                  <button
-                    onClick={updateProfile}
-                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                  >
-                    Salva
-                  </button>
-                  <button
-                    onClick={() => {
-                      setEditing(false);
-                      setUsername(profile?.username || '');
-                    }}
-                    className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
-                  >
-                    Annulla
-                  </button>
-                </div>
-              ) : (
-                <div className="mt-1 flex justify-between items-center">
-                  <div className="p-3 bg-gray-50 rounded-lg border border-gray-200 flex-1">
-                    {profile?.username}
-                  </div>
-                  <button
-                    onClick={() => setEditing(true)}
-                    className="ml-2 text-green-600 hover:text-green-700 transition-colors"
-                  >
-                    Modifica
-                  </button>
+          {!session ? (
+            <AuthForm />
+          ) : (
+            <>
+              {error && (
+                <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-lg border border-red-200 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                  {error}
                 </div>
               )}
-            </div>
+              <div className="space-y-6 mt-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Email
+                  </label>
+                  <div className="mt-1 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    {profile?.email}
+                  </div>
+                </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Segnalazioni Inviate
-              </label>
-              <div className="mt-1 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                {profile?.reports_count} segnalazioni
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Nome Utente
+                  </label>
+                  {editing ? (
+                    <div className="mt-1 flex space-x-2">
+                      <input
+                        type="text"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        className="flex-1 p-2 border rounded-lg focus:ring-green-500 focus:border-green-500 bg-white text-gray-900"
+                      />
+                      <button
+                        onClick={updateProfile}
+                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                      >
+                        Salva
+                      </button>
+                      <button
+                        onClick={() => {
+                          setEditing(false);
+                          setUsername(profile?.username || '');
+                        }}
+                        className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                      >
+                        Annulla
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="mt-1 flex justify-between items-center">
+                      <div className="p-3 bg-gray-50 rounded-lg border border-gray-200 flex-1 text-gray-900">
+                        {profile?.username}
+                      </div>
+                      <button
+                        onClick={() => setEditing(true)}
+                        className="ml-2 text-green-600 hover:text-green-700 transition-colors"
+                      >
+                        Modifica
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Segnalazioni Inviate
+                  </label>
+                  <div className="mt-1 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    {profile?.reports_count} segnalazioni
+                  </div>
+                </div>
+
+                <div className="pt-6 border-t">
+                  <button
+                    onClick={handleLogout}
+                    className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                  >
+                    Esci
+                  </button>
+                </div>
               </div>
-            </div>
-
-            <div className="pt-6 border-t">
-              <button
-                onClick={handleLogout}
-                className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-              >
-                Esci
-              </button>
-            </div>
-          </div>
+            </>
+          )}
+        </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
