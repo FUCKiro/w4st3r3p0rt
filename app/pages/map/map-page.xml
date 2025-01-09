@@ -1,0 +1,40 @@
+<Page xmlns="http://schemas.nativescript.org/tns.xsd" navigatingTo="onNavigatingTo">
+    <ActionBar title="Waste Map" class="bg-green-600 text-white">
+        <ActionItem position="right" text="Report" tap="{{ onNewReport }}" />
+    </ActionBar>
+
+    <GridLayout rows="*, auto">
+        <!-- Map View -->
+        <ContentView row="0">
+            <maps:MapView
+                xmlns:maps="@nativescript/google-maps"
+                latitude="{{ userLatitude }}"
+                longitude="{{ userLongitude }}"
+                zoom="15"
+                mapReady="{{ onMapReady }}"
+                markerSelect="{{ onMarkerSelect }}"
+                class="w-full h-full" />
+        </ContentView>
+
+        <!-- Report Form (initially hidden) -->
+        <StackLayout row="1" class="bg-white p-4 rounded-t-lg shadow-lg" visibility="{{ isReporting ? 'visible' : 'collapsed' }}">
+            <Label text="New Waste Report" class="text-xl font-bold mb-2" />
+            
+            <GridLayout rows="auto, auto, auto, auto" columns="*, *" class="space-y-2">
+                <DropDown row="0" colSpan="2" items="{{ wasteTypes }}" selectedIndex="{{ selectedWasteType }}" 
+                          class="p-2 border rounded" />
+                
+                <DropDown row="1" colSpan="2" items="{{ wasteSizes }}" selectedIndex="{{ selectedWasteSize }}"
+                          class="p-2 border rounded" />
+                
+                <TextView row="2" colSpan="2" hint="Additional notes..." text="{{ notes }}" 
+                         class="p-2 border rounded h-20" />
+                
+                <Button row="3" col="0" text="Cancel" tap="{{ cancelReport }}" 
+                        class="bg-gray-500 text-white p-2 rounded" />
+                <Button row="3" col="1" text="Submit" tap="{{ submitReport }}" 
+                        class="bg-green-600 text-white p-2 rounded" />
+            </GridLayout>
+        </StackLayout>
+    </GridLayout>
+</Page>

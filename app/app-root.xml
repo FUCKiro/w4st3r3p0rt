@@ -1,0 +1,11 @@
+<Frame defaultPage="pages/map/map-page">
+    <Frame.actionBar>
+        <ActionBar>
+            <NavigationButton visibility="collapsed" />
+            <ActionBar.actionItems>
+                <ActionItem text="Profile" android.position="popup" ios.position="right" 
+                           tap="navigateToProfile" />
+            </ActionBar.actionItems>
+        </ActionBar>
+    </Frame.actionBar>
+</Frame>

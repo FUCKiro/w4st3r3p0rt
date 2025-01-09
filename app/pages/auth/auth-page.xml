@@ -1,0 +1,37 @@
+<Page xmlns="http://schemas.nativescript.org/tns.xsd" navigatingTo="onNavigatingTo" class="bg-gray-100">
+    <ActionBar title="Profile" class="bg-green-600 text-white" />
+    
+    <ScrollView>
+        <StackLayout class="p-4 space-y-4">
+            <!-- Login Form -->
+            <StackLayout visibility="{{ isLogin ? 'visible' : 'collapsed' }}" class="space-y-3">
+                <Label text="Login" class="text-2xl font-bold text-center" />
+                
+                <TextField hint="Email" text="{{ email }}" keyboardType="email" class="p-3 bg-white rounded" />
+                <TextField hint="Password" text="{{ password }}" secure="true" class="p-3 bg-white rounded" />
+                
+                <Button text="Login" tap="{{ onLogin }}" class="bg-green-600 text-white p-3 rounded" />
+                <Button text="Switch to Register" tap="{{ toggleForm }}" class="bg-transparent text-green-600" />
+            </StackLayout>
+
+            <!-- Register Form -->
+            <StackLayout visibility="{{ !isLogin ? 'visible' : 'collapsed' }}" class="space-y-3">
+                <Label text="Register" class="text-2xl font-bold text-center" />
+                
+                <TextField hint="Username" text="{{ username }}" class="p-3 bg-white rounded" />
+                <TextField hint="Email" text="{{ email }}" keyboardType="email" class="p-3 bg-white rounded" />
+                <TextField hint="Password" text="{{ password }}" secure="true" class="p-3 bg-white rounded" />
+                
+                <Button text="Register" tap="{{ onRegister }}" class="bg-green-600 text-white p-3 rounded" />
+                <Button text="Switch to Login" tap="{{ toggleForm }}" class="bg-transparent text-green-600" />
+            </StackLayout>
+
+            <!-- Profile Info -->
+            <StackLayout visibility="{{ isLoggedIn ? 'visible' : 'collapsed' }}" class="space-y-3">
+                <Label text="Welcome {{ username }}" class="text-2xl font-bold text-center" />
+                <Label text="{{ email }}" class="text-center text-gray-600" />
+                <Button text="Logout" tap="{{ onLogout }}" class="bg-red-600 text-white p-3 rounded" />
+            </StackLayout>
+        </StackLayout>
+    </ScrollView>
+</Page>
