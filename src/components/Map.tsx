@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Trash2, Sofa, AlertTriangle, Trash, Leaf, Package, Car, Truck, Building } from 'lucide-react';
+import { Trash2, Sofa, AlertTriangle, Trash, Leaf, Package, Car, Truck, Building, Crosshair } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import type { WasteReport } from '../lib/supabase';
 import type { User } from '@supabase/supabase-js';
 import { icon, divIcon, latLng } from 'leaflet';
-
-const RADIUS_METERS = 400;
 
 // Custom marker for user location
 const userLocationIcon = divIcon({
@@ -85,6 +83,26 @@ function MapClickHandler({ onMapClick }: { onMapClick: () => void }) {
   return null;
 }
 
+function RecenterButton() {
+  const map = useMap();
+
+  const handleRecenter = () => {
+    map.locate().on("locationfound", (e) => {
+      map.flyTo(e.latlng, 15);
+    });
+  };
+
+  return (
+    <button
+      onClick={handleRecenter}
+      className="absolute bottom-4 right-4 bg-white p-2 rounded-lg shadow-lg z-[1000] hover:bg-gray-50 transition-colors"
+      title="Centra sulla mia posizione"
+    >
+      <Crosshair className="w-6 h-6 text-gray-600" />
+    </button>
+  );
+}
+
 const wasteTypes = [
   'Rifiuti Urbani',
   'Rifiuti Ingombranti',
@@ -128,7 +146,6 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
   const [notes, setNotes] = useState('');
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [nearbyReports, setNearbyReports] = useState<WasteReport[]>([]);
 
   useEffect(() => {
     loadReports();
@@ -146,7 +163,6 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setUserLocation([position.coords.latitude, position.coords.longitude]);
-          filterNearbyReports(position.coords.latitude, position.coords.longitude);
         },
         (error) => {
           console.error('Error getting location:', error);
@@ -155,18 +171,6 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
     }
   };
 
-  const filterNearbyReports = (lat: number, lng: number) => {
-    if (!reports.length) return;
-    
-    const userPos = latLng(lat, lng);
-    const nearby = reports.filter(report => {
-      const reportPos = latLng(report.latitude, report.longitude);
-      const distance = userPos.distanceTo(reportPos);
-      return distance <= RADIUS_METERS;
-    });
-    
-    setNearbyReports(nearby);
-  };
 
   const loadReports = async () => {
     try {
@@ -175,9 +179,6 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
         .select('*');
       if (error) throw error;
       setReports(data || []);
-      if (userLocation) {
-        filterNearbyReports(userLocation[0], userLocation[1]);
-      }
     } catch (error) {
       console.error('Error loading reports:', error);
     }
@@ -186,7 +187,10 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
   const verifyReport = async (reportId: string, isStillPresent: boolean) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      if (!user) {
+        console.error('User not authenticated');
+        return;
+      }
 
       const { error } = await supabase
         .from('waste_reports')
@@ -196,7 +200,11 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
         })
         .eq('id', reportId);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error updating report:', error);
+        return;
+      }
+
       loadReports();
     } catch (error) {
       console.error('Error updating report:', error);
@@ -243,7 +251,8 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
         <LocationMarker />
-        {nearbyReports.map((report) => (
+        <RecenterButton />
+        {reports.map((report) => (
           <Marker
             key={report.id}
             position={[report.latitude, report.longitude]}
