@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Trash2, Sofa, AlertTriangle, Trash, Leaf, Package, Car, Truck, Building, Crosshair, UserCircle2, PlusCircle } from 'lucide-react';
+import { Trash2, Sofa, AlertTriangle, Trash, Leaf, Package, Car, Truck, Building, Crosshair, UserCircle2, PlusCircle, Circle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import type { WasteReport } from '../lib/supabase';
 import type { User } from '@supabase/supabase-js';
@@ -71,25 +71,25 @@ const getWasteIcon = (type: number) => {
 function LocationMarker() {
   const [position, setPosition] = useState<[number, number] | null>(null);
   const map = useMap();
-  const [hasInitialLocation, setHasInitialLocation] = useState(false);
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
-    if (!hasInitialLocation) {
+    if (!initialized) {
       map.locate({
         setView: true,
         maxZoom: 18,
         enableHighAccuracy: true
       }).on("locationfound", (e: LocationEvent) => {
         setPosition([e.latlng.lat, e.latlng.lng]);
-        setHasInitialLocation(true);
+        setInitialized(true);
       }).on("locationerror", (e: LeafletEvent) => {
         console.error("Error getting location:", e);
         // Fallback to default location (Italy)
         map.flyTo([41.9028, 12.4964], 17);
-        setMapInitialized(true);
+        setInitialized(true);
       });
     }
-  }, [map]);
+  }, [map, initialized]);
 
   return position === null ? null : (
     <Marker position={position} icon={userLocationIcon}>
