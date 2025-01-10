@@ -99,6 +99,7 @@ export function AuthForm() {
               <label htmlFor="password" className="sr-only">
                 Password
               </label>
+              <div className="relative">
               <input
                 id="password"
                 name="password"
@@ -110,6 +111,29 @@ export function AuthForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+              {!isLogin && (
+                <div className="mt-2 text-sm text-gray-600 space-y-1">
+                  <p>La password deve contenere:</p>
+                  <ul className="list-disc pl-5 space-y-1">
+                    <li className={`${password.length >= 8 ? 'text-green-600' : ''}`}>
+                      Almeno 8 caratteri
+                    </li>
+                    <li className={`${/[A-Z]/.test(password) ? 'text-green-600' : ''}`}>
+                      Almeno una lettera maiuscola
+                    </li>
+                    <li className={`${/[a-z]/.test(password) ? 'text-green-600' : ''}`}>
+                      Almeno una lettera minuscola
+                    </li>
+                    <li className={`${/[0-9]/.test(password) ? 'text-green-600' : ''}`}>
+                      Almeno un numero
+                    </li>
+                    <li className={`${/[!@#$%^&*]/.test(password) ? 'text-green-600' : ''}`}>
+                      Almeno un carattere speciale (!@#$%^&*)
+                    </li>
+                  </ul>
+                </div>
+              )}
+              </div>
             </div>
           </div>
 

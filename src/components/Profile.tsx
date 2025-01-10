@@ -24,7 +24,12 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    loadProfile();
+    if (session) {
+      loadProfile();
+    } else {
+      setProfile(null);
+      setLoading(false);
+    }
     
     // Ascolta l'evento di ricaricamento del profilo
     const handleReload = () => loadProfile();
@@ -33,7 +38,7 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
     return () => {
       window.removeEventListener('reload-profile', handleReload);
     };
-  }, []);
+  }, [session]); // Aggiungi session come dipendenza
 
   const loadProfile = async () => {
     try {
@@ -150,10 +155,27 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
       >
         <div className="h-full overflow-y-auto">
           <div className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">
-              {session ? 'Il tuo profilo' : 'Accedi'}
-            </h1>
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center">
+              <div className="relative">
+                <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-2xl font-bold border-2 border-green-200">
+                  {profile?.username ? profile.username.charAt(0).toUpperCase() : '👤'}
+                </div>
+                {profile?.stats?.level && (
+                  <div className="absolute -bottom-2 -right-2 bg-green-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center border-2 border-white">
+                    {profile.stats.level}
+                  </div>
+                )}
+              </div>
+              <div className="ml-4">
+                <h1 className="text-2xl font-bold text-gray-900">
+                  {session ? (profile?.username || 'Il tuo profilo') : 'Accedi'}
+                </h1>
+                {profile && (
+                  <p className="text-sm text-gray-600">{profile.email}</p>
+                )}
+              </div>
+            </div>
             <button
               onClick={onClose}
               className="p-2 rounded-full hover:bg-gray-100 transition-colors"
@@ -184,16 +206,7 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
                   {error}
                 </div>
               )}
-              <div className="space-y-6 mt-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Email
-                  </label>
-                  <div className="mt-1 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                    {profile?.email}
-                  </div>
-                </div>
-
+              <div className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
                     Nome Utente
