@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents, Circle as LeafletCircle } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Trash2, Sofa, AlertTriangle, Trash, Leaf, Package, Car, Truck, Building, Crosshair, UserCircle2, PlusCircle, Circle } from 'lucide-react';
+import { Trash2, Sofa, AlertTriangle, Trash, Leaf, Package, Car, Truck, Building, Crosshair, UserCircle2, PlusCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import type { WasteReport } from '../lib/supabase';
 import type { User } from '@supabase/supabase-js';
@@ -420,7 +420,7 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
         <LocationMarker />
         <RecenterButton />
         {mapInitialized && userLocation && (
-          <circle
+          <LeafletCircle
             center={userLocation}
             radius={RADIUS}
             pathOptions={{
