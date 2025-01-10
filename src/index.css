@@ -13,6 +13,20 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  .leaflet-control-zoom {
+    margin-bottom: 80px !important;
+  }
+  
+  .leaflet-control-attribution {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
 @keyframes pulse {
   0% {
     transform: scale(0.8);

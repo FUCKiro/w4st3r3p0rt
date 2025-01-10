@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Trash2, Sofa, AlertTriangle, Trash, Leaf, Package, Car, Truck, Building, Crosshair } from 'lucide-react';
+import { Trash2, Sofa, AlertTriangle, Trash, Leaf, Package, Car, Truck, Building, Crosshair, UserCircle2, PlusCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import type { WasteReport } from '../lib/supabase';
 import type { User } from '@supabase/supabase-js';
@@ -122,10 +122,10 @@ function RecenterButton() {
   return (
     <button
       onClick={handleRecenter}
-      className="absolute bottom-4 right-4 bg-white p-2 rounded-lg shadow-lg z-[1000] hover:bg-gray-50 transition-colors"
+      className="absolute bottom-20 right-4 bg-white p-3 rounded-full shadow-lg z-[1000] hover:bg-gray-50 transition-colors"
       title="Centra sulla mia posizione"
     >
-      <Crosshair className="w-6 h-6 text-gray-600" />
+      <Crosshair className="w-5 h-5 text-gray-600" />
     </button>
   );
 }
@@ -204,8 +204,9 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
   const loadReports = async () => {
     try {
       const { data, error } = await supabase
-        .from('waste_reports')
-        .select('*');
+        .from('waste_reports') 
+        .select('*')
+        .neq('status', 'resolved');  // Esclude i report risolti
         
       if (error) throw error;
       
@@ -239,6 +240,7 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
+      // Aggiorna lo stato del report
       const { error } = await supabase
         .from('waste_reports')
         .update({
@@ -249,6 +251,7 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
       
       if (error) throw error;
 
+      // Aggiorna le statistiche dell'utente
       const { data: stats } = await supabase
         .from('user_stats')
         .select('*')
@@ -448,18 +451,20 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
       {!isProfileOpen && (
         <button
           onClick={onProfileClick}
-          className="absolute top-4 left-4 bg-white text-green-600 px-4 py-2 rounded-lg shadow-lg z-[1000] hover:bg-gray-50 transition-colors"
+          className="absolute top-4 left-4 bg-white text-green-600 p-3 rounded-full shadow-lg z-[1000] hover:bg-gray-50 transition-colors"
+          title={user ? 'Profilo' : 'Accedi'}
         >
-          {user ? 'Profilo' : 'Accedi'}
+          <UserCircle2 className="w-5 h-5" />
         </button>
       )}
 
       {user && (
         <button
           onClick={() => setShowReportForm(true)}
-          className="absolute top-4 right-4 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg z-[1000]"
+          className="absolute top-4 right-4 bg-green-600 text-white p-3 rounded-full shadow-lg z-[1000] hover:bg-green-700 transition-colors"
+          title="Segnala Rifiuti"
         >
-          Segnala Rifiuti
+          <PlusCircle className="w-5 h-5" />
         </button>
       )}
 
