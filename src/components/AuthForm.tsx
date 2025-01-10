@@ -43,7 +43,7 @@ export function AuthForm() {
               level: 1,
               reports_submitted: 0,
               reports_verified: 0,
-              badges: ['{}']
+              badges: []
             });
           
           if (statsError) {

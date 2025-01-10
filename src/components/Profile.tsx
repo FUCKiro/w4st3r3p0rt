@@ -65,7 +65,7 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
             level: 1,
             reports_submitted: 0,
             reports_verified: 0,
-            badges: ['{}']
+            badges: []
           })
           .select()
           .single();
@@ -279,11 +279,9 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
                     {profile?.stats?.badges && profile.stats.badges.length > 0 && (
                       <div>
                         <h3 className="text-sm font-medium text-gray-700 mb-2">Badge Ottenuti</h3>
-                        <div className="grid grid-cols-1 gap-2">
-                          {profile.stats.badges.filter(badge => badge !== '{}').map(badgeId => {
-                            const badge = BADGES[badgeId as keyof typeof BADGES];
-                            if (!badge) return null;
-                            return (
+                        <div className="grid grid-cols-1 gap-3">
+                          {Object.values(BADGES).map(badge => (
+                            profile.stats?.badges.includes(badge.id) && (
                               <div
                                 key={badge.id}
                                 className="flex items-center p-3 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
@@ -294,8 +292,8 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
                                   <div className="text-sm text-gray-600">{badge.description}</div>
                                 </div>
                               </div>
-                            );
-                          })}
+                            )
+                          ))}
                         </div>
                       </div>
                     )}

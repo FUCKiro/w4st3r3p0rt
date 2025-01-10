@@ -261,17 +261,23 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
       if (!stats) {
         await supabase.from('user_stats').insert({
           user_id: user.id,
-          xp: 2,
+          xp: 5,
           level: 1,
           reports_submitted: 0,
           reports_verified: 1,
           badges: ['first_verification']
         });
       } else {
-        const newXP = stats.xp + 2;
+        const newXP = stats.xp + 5;
         const newLevel = Math.floor(newXP / 100) + 1;
-        const newBadges = [...stats.badges];
+        const newBadges = stats.badges ? [...stats.badges] : [];
 
+        // Aggiungi il badge first_verification se è la prima verifica
+        if (stats.reports_verified === 0 && !newBadges.includes('first_verification')) {
+          newBadges.push('first_verification');
+        }
+
+        // Aggiungi il badge five_verifications se raggiungiamo 5 verifiche
         if (stats.reports_verified + 1 === 5) {
           newBadges.push('five_verifications');
         }
@@ -282,7 +288,7 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
             xp: newXP,
             level: newLevel,
             reports_verified: stats.reports_verified + 1,
-            badges: newBadges
+            badges: Array.from(new Set(newBadges)) // Rimuove eventuali duplicati
           })
           .eq('user_id', user.id);
       }
@@ -323,7 +329,7 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
       if (!stats) {
         // Create new stats for first-time user
         const initialBadges = ['first_report'];
-        await supabase.from('user_stats').insert({
+        const { error: statsError } = await supabase.from('user_stats').insert({
           user_id: user.id,
           xp: 10,
           level: 1,
@@ -331,11 +337,16 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
           reports_verified: 0,
           badges: initialBadges
         });
+        
+        if (statsError) {
+          console.error('Error creating user stats:', statsError);
+          throw statsError;
+        }
       } else {
         const newXP = stats.xp + 10;
         const newLevel = Math.floor(newXP / 100) + 1;
         const newReportsSubmitted = stats.reports_submitted + 1;
-        const newBadges = Array.isArray(stats.badges) ? [...stats.badges] : [];
+        const newBadges = [...(stats.badges || [])];
 
         // Check for new badges
         if (!newBadges.includes('first_report')) {
@@ -425,19 +436,19 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
                       <span className="text-gray-600">{report.notes}</span>
                     </p>
                   )}
-                  {user && report.status === 'new' && (
+                  {user && (report.status === 'new' || report.status === 'verified') && (
                     <div className="mt-4 space-x-2">
                       <button
                         onClick={() => verifyReport(report.id, true)}
                         className="px-3 py-1 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700"
                       >
-                        Conferma Presenza
+                        {report.status === 'new' ? 'Conferma Presenza' : 'Ancora Presente'}
                       </button>
                       <button
                         onClick={() => verifyReport(report.id, false)}
                         className="px-3 py-1 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700"
                       >
-                        Non Presente
+                        {report.status === 'new' ? 'Non Presente' : 'Risolto'}
                       </button>
                     </div>
                   )}

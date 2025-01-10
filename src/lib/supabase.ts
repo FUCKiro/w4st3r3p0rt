@@ -42,31 +42,31 @@ export interface UserStats {
 }
 
 export const BADGES = {
-  FIRST_REPORT: {
+  first_report: {
     id: 'first_report',
     name: 'Primo Passo',
     description: 'Hai fatto la tua prima segnalazione',
     icon: '🌱'
   },
-  FIVE_REPORTS: {
+  five_reports: {
     id: 'five_reports',
     name: 'Sentinella',
     description: 'Hai fatto 5 segnalazioni',
     icon: '👀'
   },
-  TEN_REPORTS: {
+  ten_reports: {
     id: 'ten_reports',
     name: 'Guardiano',
     description: 'Hai fatto 10 segnalazioni',
     icon: '🛡️'
   },
-  FIRST_VERIFICATION: {
+  first_verification: {
     id: 'first_verification',
     name: 'Verificatore',
     description: 'Hai verificato la tua prima segnalazione',
     icon: '✅'
   },
-  FIVE_VERIFICATIONS: {
+  five_verifications: {
     id: 'five_verifications',
     name: 'Ispettore',
     description: 'Hai verificato 5 segnalazioni',
