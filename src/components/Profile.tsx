@@ -414,7 +414,27 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
                 </div>
               </div>
               <div className="mt-8 pt-6 border-t text-center text-sm text-gray-500">
-                Sviluppato da Fabio La Rocca
+                Ideato e Sviluppato da Fabio La Rocca
+                <button
+                  onClick={() => window.alert('Waste Monitor v1.0\n\nQuesta applicazione è stata creata per aiutare i cittadini a segnalare e monitorare i rifiuti abbandonati nella propria zona.\n\nTutti i diritti riservati © 2024\nIdeato e Sviluppato da Fabio La Rocca')}
+                  className="ml-2 p-1 text-green-600 hover:text-green-700 rounded-full hover:bg-green-50 transition-colors"
+                  title="Informazioni sull'app"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="w-4 h-4"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="16" x2="12" y2="12" />
+                    <line x1="12" y1="8" x2="12.01" y2="8" />
+                  </svg>
+                </button>
               </div>
             </>
           )}
