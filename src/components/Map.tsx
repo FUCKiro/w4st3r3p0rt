@@ -77,7 +77,7 @@ function LocationMarker() {
     if (!hasInitialLocation) {
       map.locate({
         setView: true,
-        maxZoom: 16,
+        maxZoom: 18,
         enableHighAccuracy: true
       }).on("locationfound", (e) => {
         setPosition([e.latlng.lat, e.latlng.lng]);
@@ -85,7 +85,8 @@ function LocationMarker() {
       }).on("locationerror", (e) => {
         console.error("Error getting location:", e);
         // Fallback to default location (Italy)
-        map.setView([41.9028, 12.4964], 6);
+        map.flyTo(e.latlng, 17);
+        setMapInitialized(true);
       });
     }
   }, [map]);
@@ -175,6 +176,7 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
   const [user, setUser] = useState<User | null>(null);
   const [nearbyReports, setNearbyReports] = useState<WasteReport[]>([]);
   const RADIUS = 250; // 250 meters radius
+  const [mapInitialized, setMapInitialized] = useState(false);
 
   useEffect(() => {
     loadReports();
@@ -203,13 +205,21 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
 
   const loadReports = async () => {
     try {
+      if (!supabase) {
+        console.error('Supabase client not initialized');
+        return;
+      }
+
       const { data, error } = await supabase
-        .from('waste_reports') 
+        .from('waste_reports_with_users')
         .select('*')
-        .neq('status', 'resolved');  // Esclude i report risolti
-        
-      if (error) throw error;
-      
+        .neq('status', 'resolved');
+
+      if (error) {
+        console.error('Error fetching reports:', error);
+        return;
+      }
+
       // Filter reports within radius if user location is available
       if (userLocation) {
         const filtered = (data || []).filter(report => {
@@ -225,6 +235,12 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
       }
     } catch (error) {
       console.error('Error loading reports:', error);
+      // Handle specific error types if needed
+      if (error instanceof Error) {
+        if (error.message.includes('Failed to fetch')) {
+          console.error('Network error - check your connection');
+        }
+      }
     }
   };
 
@@ -389,9 +405,12 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
   return (
     <div className="relative w-full h-full">
       <MapContainer
-        center={[0, 0]}
-        zoom={2}
+        center={[41.9028, 12.4964]} // Default center on Italy
+        zoom={6}
         className="w-full h-full"
+        maxBounds={[[-90, -180], [90, 180]]}
+        minZoom={3}
+        zoomControl={false}
       >
         <MapClickHandler onMapClick={() => setShowReportForm(false)} />
         <TileLayer
@@ -400,6 +419,19 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
         />
         <LocationMarker />
         <RecenterButton />
+        {mapInitialized && userLocation && (
+          <circle
+            center={userLocation}
+            radius={RADIUS}
+            pathOptions={{
+              color: '#10B981',
+              fillColor: '#10B981',
+              fillOpacity: 0.1,
+              weight: 1,
+              dashArray: '5, 5'
+            }}
+          />
+        )}
         {nearbyReports.map((report) => (
           <Marker
             key={report.id}
@@ -436,6 +468,20 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
                       <span className="text-gray-600">{report.notes}</span>
                     </p>
                   )}
+                  <div className="mt-2 pt-2 border-t border-gray-200">
+                    <p className="text-sm text-gray-500">
+                      Segnalato da: {report.username || 'Utente Anonimo'}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {new Date(report.created_at).toLocaleDateString('it-IT', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </p>
+                  </div>
                   {user && (report.status === 'new' || report.status === 'verified') && (
                     <div className="mt-4 space-x-2">
                       <button
