@@ -5,7 +5,7 @@ import { Trash2, Sofa, AlertTriangle, Trash, Leaf, Package, Car, Truck, Building
 import { supabase } from '../lib/supabase';
 import type { WasteReport } from '../lib/supabase';
 import type { User } from '@supabase/supabase-js';
-import { icon, divIcon, latLng, LatLng } from 'leaflet';
+import { icon, divIcon, LeafletEvent, LeafletMouseEvent, LocationEvent } from 'leaflet';
 
 // Function to calculate distance between two points in meters
 function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
@@ -79,13 +79,13 @@ function LocationMarker() {
         setView: true,
         maxZoom: 18,
         enableHighAccuracy: true
-      }).on("locationfound", (e) => {
+      }).on("locationfound", (e: LocationEvent) => {
         setPosition([e.latlng.lat, e.latlng.lng]);
         setHasInitialLocation(true);
-      }).on("locationerror", (e) => {
+      }).on("locationerror", (e: LeafletEvent) => {
         console.error("Error getting location:", e);
         // Fallback to default location (Italy)
-        map.flyTo(e.latlng, 17);
+        map.flyTo([41.9028, 12.4964], 17);
         setMapInitialized(true);
       });
     }
@@ -115,7 +115,7 @@ function RecenterButton() {
   const map = useMap();
 
   const handleRecenter = () => {
-    map.locate().on("locationfound", (e) => {
+    map.locate().on("locationfound", (e: LocationEvent) => {
       map.flyTo(e.latlng, 15);
     });
   };
@@ -211,7 +211,7 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
       }
 
       const { data, error } = await supabase
-        .from('waste_reports_with_users')
+        .from('waste_reports')
         .select('*')
         .neq('status', 'resolved');
 
@@ -222,7 +222,7 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
 
       // Filter reports within radius if user location is available
       if (userLocation) {
-        const filtered = (data || []).filter(report => {
+        const filtered = (data || []).filter((report: WasteReport) => {
           const distance = calculateDistance(
             userLocation[0],
             userLocation[1],
@@ -436,7 +436,7 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
           <Marker
             key={report.id}
             position={[report.latitude, report.longitude]}
-            icon={getWasteIcon(report.waste_type)}
+            icon={getWasteIcon(Number(report.waste_type))}
           >
             <Popup>
               <div className="p-2">
@@ -470,7 +470,7 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
                   )}
                   <div className="mt-2 pt-2 border-t border-gray-200">
                     <p className="text-sm text-gray-500">
-                      Segnalato da: {report.username || 'Utente Anonimo'}
+                      Segnalato da: Utente Anonimo
                     </p>
                     <p className="text-sm text-gray-500">
                       {new Date(report.created_at).toLocaleDateString('it-IT', {
