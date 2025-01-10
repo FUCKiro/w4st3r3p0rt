@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { AuthForm } from './AuthForm';
-import type { UserStats } from '../lib/supabase';
+import type { UserStats, WasteReport } from '../lib/supabase';
 import { BADGES } from '../lib/supabase';
 
 interface UserProfile {
   username: string;
   email: string;
   stats?: UserStats;
+  reports?: WasteReport[];
 }
 
 interface ProfileProps {
@@ -22,6 +23,7 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
   const [editing, setEditing] = useState(false);
   const [username, setUsername] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'stats' | 'reports'>('stats');
 
   useEffect(() => {
     if (session) {
@@ -60,6 +62,13 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
         .eq('user_id', user.id)
         .single();
 
+      // Get user reports
+      const { data: reports } = await supabase
+        .from('waste_reports')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
       // If no stats exist yet, create default stats
       if (!stats) {
         const { data: newStats, error: createError } = await supabase
@@ -80,13 +89,15 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
         setProfile({
           username,
           email: user.email!,
-          stats: newStats
+          stats: newStats,
+          reports: reports || []
         });
       } else {
         setProfile({
           username,
           email: user.email!,
-          stats
+          stats,
+          reports: reports || []
         });
       }
 
@@ -250,68 +261,148 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
                   )}
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                {/* Tabs */}
+                <div className="flex border-b border-gray-200 mb-6">
+                  <button
+                    onClick={() => setActiveTab('stats')}
+                    className={`flex-1 py-3 text-sm font-medium border-b-2 ${
+                      activeTab === 'stats'
+                        ? 'border-green-600 text-green-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700'
+                    }`}
+                  >
                     Statistiche
-                  </label>
-                  <div className="space-y-4">
-                    <div className="bg-gray-50 rounded-lg border border-gray-200 p-4">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm text-gray-600">Livello {profile?.stats?.level || 1}</span>
-                        <span className="text-sm text-gray-600">{profile?.stats?.xp || 0} XP</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div
-                          className="bg-green-600 h-2 rounded-full transition-all duration-500"
-                          style={{
-                            width: `${((profile?.stats?.xp || 0) % 100) / 100 * 100}%`
-                          }}
-                        />
-                      </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-gray-50 rounded-lg border border-gray-200 p-4">
-                        <div className="text-2xl font-bold text-gray-900 mb-1">
-                          {profile?.stats?.reports_submitted || 0}
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          Segnalazioni Inviate
-                        </div>
-                      </div>
-                      <div className="bg-gray-50 rounded-lg border border-gray-200 p-4">
-                        <div className="text-2xl font-bold text-gray-900 mb-1">
-                          {profile?.stats?.reports_verified || 0}
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          Verifiche Effettuate
-                        </div>
-                      </div>
-                    </div>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('reports')}
+                    className={`flex-1 py-3 text-sm font-medium border-b-2 ${
+                      activeTab === 'reports'
+                        ? 'border-green-600 text-green-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700'
+                    }`}
+                  >
+                    Le Mie Segnalazioni
+                  </button>
+                </div>
 
-                    {profile?.stats?.badges && profile.stats.badges.length > 0 && (
-                      <div>
-                        <h3 className="text-sm font-medium text-gray-700 mb-2">Badge Ottenuti</h3>
-                        <div className="grid grid-cols-1 gap-3">
-                          {Object.values(BADGES).map(badge => (
-                            profile.stats?.badges.includes(badge.id) && (
-                              <div
-                                key={badge.id}
-                                className="flex items-center p-3 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
-                              >
-                                <span className="text-3xl mr-3">{badge.icon}</span>
-                                <div>
-                                  <div className="font-medium">{badge.name}</div>
-                                  <div className="text-sm text-gray-600">{badge.description}</div>
-                                </div>
-                              </div>
-                            )
-                          ))}
+                {activeTab === 'stats' ? (
+                  <div className="space-y-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Statistiche
+                      </label>
+                      <div className="space-y-4">
+                        <div className="bg-gray-50 rounded-lg border border-gray-200 p-4">
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-sm text-gray-600">Livello {profile?.stats?.level || 1}</span>
+                            <span className="text-sm text-gray-600">{profile?.stats?.xp || 0} XP</span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div
+                              className="bg-green-600 h-2 rounded-full transition-all duration-500"
+                              style={{
+                                width: `${((profile?.stats?.xp || 0) % 100) / 100 * 100}%`
+                              }}
+                            />
+                          </div>
                         </div>
+                        
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="bg-gray-50 rounded-lg border border-gray-200 p-4">
+                            <div className="text-2xl font-bold text-gray-900 mb-1">
+                              {profile?.stats?.reports_submitted || 0}
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              Segnalazioni Inviate
+                            </div>
+                          </div>
+                          <div className="bg-gray-50 rounded-lg border border-gray-200 p-4">
+                            <div className="text-2xl font-bold text-gray-900 mb-1">
+                              {profile?.stats?.reports_verified || 0}
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              Verifiche Effettuate
+                            </div>
+                          </div>
+                        </div>
+
+                        {profile?.stats?.badges && profile.stats.badges.length > 0 && (
+                          <div>
+                            <h3 className="text-sm font-medium text-gray-700 mb-2">Badge Ottenuti</h3>
+                            <div className="grid grid-cols-1 gap-3">
+                              {Object.values(BADGES).map(badge => (
+                                profile.stats?.badges.includes(badge.id) && (
+                                  <div
+                                    key={badge.id}
+                                    className="flex items-center p-3 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+                                  >
+                                    <span className="text-3xl mr-3">{badge.icon}</span>
+                                    <div>
+                                      <div className="font-medium">{badge.name}</div>
+                                      <div className="text-sm text-gray-600">{badge.description}</div>
+                                    </div>
+                                  </div>
+                                )
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {profile?.reports && profile.reports.length > 0 ? (
+                      profile.reports.map((report) => (
+                        <div
+                          key={report.id}
+                          className="bg-white rounded-lg border border-gray-200 p-4 hover:bg-gray-50 transition-colors"
+                        >
+                          <div className="flex justify-between items-start mb-2">
+                            <div className="font-medium">
+                              {['Rifiuti Urbani', 'Rifiuti Ingombranti', 'Materiali Pericolosi', 'Discarica Abusiva', 'Rifiuti Verdi'][report.waste_type]}
+                            </div>
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              report.status === 'new' ? 'bg-blue-100 text-blue-800' :
+                              report.status === 'verified' ? 'bg-yellow-100 text-yellow-800' :
+                              report.status === 'in_progress' ? 'bg-purple-100 text-purple-800' :
+                              report.status === 'resolved' ? 'bg-green-100 text-green-800' :
+                              'bg-gray-100 text-gray-800'
+                            }`}>
+                              {report.status === 'new' ? 'Nuovo' :
+                               report.status === 'verified' ? 'Verificato' :
+                               report.status === 'in_progress' ? 'In Corso' :
+                               report.status === 'resolved' ? 'Risolto' :
+                               'Archiviato'}
+                            </span>
+                          </div>
+                          <div className="text-sm text-gray-600 space-y-1">
+                            <p>Dimensione: {
+                              ['Piccolo (entra in un sacchetto)',
+                               'Medio (entra in un\'auto)',
+                               'Grande (necessita di un camion)',
+                               'Molto Grande (discarica illegale)'][report.size]
+                            }</p>
+                            {report.notes && (
+                              <p>Note: {report.notes}</p>
+                            )}
+                            <p>Data: {new Date(report.created_at).toLocaleDateString('it-IT', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}</p>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-8 text-gray-500">
+                        Non hai ancora effettuato nessuna segnalazione
                       </div>
                     )}
                   </div>
-                </div>
+                )}
 
                 <div className="pt-6 border-t">
                   <button
