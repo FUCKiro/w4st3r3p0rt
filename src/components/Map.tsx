@@ -387,11 +387,11 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
   };
 
   return (
-    <div className="h-screen relative">
+    <div className="relative w-full h-full">
       <MapContainer
         center={[0, 0]}
         zoom={2}
-        style={{ height: '100%', width: '100%' }}
+        className="w-full h-full"
       >
         <MapClickHandler onMapClick={() => setShowReportForm(false)} />
         <TileLayer
@@ -480,7 +480,7 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
       )}
 
       {showReportForm && (
-        <div className="absolute bottom-0 left-0 right-0 bg-white p-4 shadow-lg z-[1000]">
+        <div className="absolute bottom-0 left-0 right-0 bg-white p-4 shadow-lg z-[1000] report-form-panel">
           <h3 className="text-lg font-bold mb-4">Segnala Rifiuti</h3>
           <div className="space-y-6">
             <div>

@@ -149,11 +149,11 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
         />
       )}
       <div 
-        className={`fixed inset-y-0 left-0 w-full sm:w-96 bg-white shadow-xl transform transition-transform duration-300 ease-in-out z-[2000] ${
+        className={`fixed inset-y-0 left-0 w-full sm:w-96 bg-white shadow-xl transform transition-transform duration-300 ease-in-out z-[2000] overflow-hidden ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="h-full overflow-y-auto">
+        <div className="h-full overflow-y-auto overscroll-contain">
           <div className="p-6">
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center">
@@ -321,6 +321,9 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
                     Esci
                   </button>
                 </div>
+              </div>
+              <div className="mt-8 pt-6 border-t text-center text-sm text-gray-500">
+                Sviluppato da Fabio La Rocca
               </div>
             </>
           )}
