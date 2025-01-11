@@ -26,6 +26,7 @@ export interface User {
 export interface WasteReport {
   id: string;
   user_id: string;
+  username?: string;
   latitude: number;
   longitude: number;
   waste_type: number;

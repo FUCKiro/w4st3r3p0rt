@@ -23,9 +23,10 @@ export function AuthForm() {
     setError(null);
 
     try {
-      // Ottieni l'URL base corrente dell'applicazione
-      const baseUrl = window.location.origin;
-      const resetUrl = `${baseUrl}/reset-password`;
+      // Usa l'URL di Netlify se disponibile, altrimenti usa l'URL corrente
+      const netlifyUrl = import.meta.env.VITE_SITE_URL;
+      const baseUrl = netlifyUrl || window.location.origin;
+      const resetUrl = `${baseUrl}/#/reset-password`;
 
       const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
         redirectTo: resetUrl
