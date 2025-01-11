@@ -123,7 +123,7 @@ function RecenterButton() {
   return (
     <button
       onClick={handleRecenter}
-      className="absolute bottom-20 right-4 bg-white p-3 rounded-full shadow-lg z-[1000] hover:bg-gray-50 transition-colors"
+      className="absolute bottom-24 right-4 bg-white p-3 rounded-full shadow-lg z-[1000] hover:bg-gray-50 transition-colors mobile-button"
       title="Centra sulla mia posizione"
     >
       <Crosshair className="w-5 h-5 text-gray-600" />
@@ -526,7 +526,11 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
       )}
 
       {showReportForm && (
-        <div className="absolute bottom-0 left-0 right-0 bg-white p-4 shadow-lg z-[1000] report-form-panel">
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-[1000]" onClick={() => setShowReportForm(false)}>
+          <div 
+            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-xl shadow-lg z-[1000] report-form-panel transform transition-transform duration-300 ease-out"
+            onClick={e => e.stopPropagation()}
+          >
           <h3 className="text-lg font-bold mb-4">Segnala Rifiuti</h3>
           <div className="space-y-6">
             <div>
@@ -603,6 +607,7 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
                 Invia
               </button>
             </div>
+          </div>
           </div>
         </div>
       )}
