@@ -39,6 +39,31 @@ body {
 
 /* Optimize for mobile devices */
 @media (max-width: 640px) {
+  /* Report form panel adjustments */
+  .report-form-panel {
+    max-height: 85vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Adjust grid layouts for better mobile display */
+  .waste-type-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+
+  .waste-size-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  /* Make buttons more tappable on mobile */
+  .mobile-button {
+    min-height: 44px;
+    padding: 0.75rem;
+  }
+
   .leaflet-control-zoom {
     margin-bottom: 80px !important;
   }

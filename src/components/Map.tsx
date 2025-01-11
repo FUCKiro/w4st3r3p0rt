@@ -533,14 +533,14 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Tipo di Rifiuto
               </label>
-              <div className="grid grid-cols-5 gap-2">
+              <div className="grid grid-cols-5 gap-2 waste-type-grid">
                 {wasteTypes.map((type, index) => {
                   const IconComponent = wasteIcons[index];
                   return (
                     <button
                       key={type}
                       onClick={() => setSelectedType(index)}
-                      className={`flex flex-col items-center p-3 rounded-lg border ${
+                      className={`flex flex-col items-center p-2 rounded-lg border mobile-button ${
                         selectedType === index
                           ? 'border-green-500 bg-green-50 text-green-700'
                           : 'border-gray-200 hover:border-green-200 hover:bg-green-50'
@@ -558,14 +558,14 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Dimensione
               </label>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-4 gap-2 waste-size-grid">
                 {wasteSizes.map((size, index) => {
                   const IconComponent = sizeIcons[index];
                   return (
                     <button
                       key={size}
                       onClick={() => setSelectedSize(index)}
-                      className={`flex flex-col items-center p-3 rounded-lg border ${
+                      className={`flex flex-col items-center p-2 rounded-lg border mobile-button ${
                         selectedSize === index
                           ? 'border-green-500 bg-green-50 text-green-700'
                           : 'border-gray-200 hover:border-green-200 hover:bg-green-50'
@@ -592,13 +592,13 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
             <div className="flex space-x-2 pt-2">
               <button
                 onClick={() => setShowReportForm(false)}
-                className="flex-1 bg-gray-500 text-white px-4 py-2 rounded"
+                className="flex-1 bg-gray-500 text-white px-4 py-2 rounded mobile-button"
               >
                 Annulla
               </button>
               <button
                 onClick={submitReport}
-                className="flex-1 bg-green-600 text-white px-4 py-2 rounded"
+                className="flex-1 bg-green-600 text-white px-4 py-2 rounded mobile-button"
               >
                 Invia
               </button>
