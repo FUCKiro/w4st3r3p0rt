@@ -4,7 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import { Trash2, Sofa, AlertTriangle, Trash, Leaf, Package, Car, Truck, Building, Crosshair, UserCircle2, PlusCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import type { WasteReport } from '../lib/supabase';
-import type { User } from '@supabase/supabase-js';
+import { User, Session } from '@supabase/supabase-js';
 import { icon, divIcon, LeafletEvent, LeafletMouseEvent, LocationEvent } from 'leaflet';
 
 // Function to calculate distance between two points in meters
@@ -180,16 +180,16 @@ const sizeIcons = [
 interface MapProps {
   onProfileClick: () => void;
   isProfileOpen?: boolean;
+  session?: Session | null;
 }
 
-export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
+export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps) {
   const [reports, setReports] = useState<WasteReport[]>([]);
   const [showReportForm, setShowReportForm] = useState(false);
   const [selectedType, setSelectedType] = useState(0);
   const [selectedSize, setSelectedSize] = useState(0);
   const [notes, setNotes] = useState('');
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
-  const [user, setUser] = useState<User | null>(null);
   const [nearbyReports, setNearbyReports] = useState<WasteReport[]>([]);
   const RADIUS = 250; // 250 meters radius
   const [mapInitialized, setMapInitialized] = useState(false);
@@ -197,13 +197,7 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
   useEffect(() => {
     loadReports();
     getCurrentLocation();
-    checkUser();
   }, []);
-
-  const checkUser = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    setUser(user as User | null);
-  };
 
   const getCurrentLocation = () => {
     if (navigator.geolocation) {
@@ -217,7 +211,6 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
       );
     }
   };
-
 
   const loadReports = async () => {
     try {
@@ -423,7 +416,7 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
       <MapContainer
         center={[41.9028, 12.4964]} // Default center on Italy
         zoom={6}
-        className="w-full h-full"
+        className="w-full h-full relative"
         maxBounds={[[-90, -180], [90, 180]]}
         minZoom={3}
         zoomControl={false}
@@ -498,7 +491,7 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
                       })}
                     </p>
                   </div>
-                  {user && (report.status === 'new' || report.status === 'verified') && (
+                  {session?.user && (report.status === 'new' || report.status === 'verified') && (
                     <div className="mt-4 space-x-2">
                       <button
                         onClick={() => verifyReport(report.id, true)}
@@ -520,18 +513,18 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
           </Marker>
         ))}
       </MapContainer>
-
+      
       {!isProfileOpen && (
         <button
           onClick={onProfileClick}
           className="absolute top-4 left-4 bg-white text-green-600 p-3 rounded-full shadow-lg z-[1000] hover:bg-gray-50 transition-colors"
-          title={user ? 'Profilo' : 'Accedi'}
+          title={session?.user ? 'Profilo' : 'Accedi'}
         >
           <UserCircle2 className="w-5 h-5" />
         </button>
       )}
 
-      {user && (
+      {session?.user && (
         <button
           onClick={() => setShowReportForm(true)}
           className="absolute top-4 right-4 bg-green-600 text-white p-3 rounded-full shadow-lg z-[1000] hover:bg-green-700 transition-colors"
@@ -619,6 +612,7 @@ export function Map({ onProfileClick, isProfileOpen = false }: MapProps) {
               <button
                 onClick={submitReport}
                 className="flex-1 bg-green-600 text-white px-4 py-2 rounded mobile-button"
+                disabled={!session?.user}
               >
                 Invia
               </button>

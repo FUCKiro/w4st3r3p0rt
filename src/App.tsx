@@ -35,6 +35,7 @@ function App() {
         <Map 
           onProfileClick={() => setIsProfileOpen(true)} 
           isProfileOpen={isProfileOpen}
+          session={session}
         />
         <Profile 
           isOpen={isProfileOpen} 
