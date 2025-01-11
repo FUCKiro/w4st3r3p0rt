@@ -220,7 +220,7 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
       }
 
       const { data, error } = await supabase
-        .from('waste_reports')
+        .from('waste_reports_with_users')
         .select('*')
         .neq('status', 'resolved');
 
@@ -479,7 +479,7 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
                   )}
                   <div className="mt-2 pt-2 border-t border-gray-200">
                     <p className="text-sm text-gray-500">
-                      Segnalato da: Utente Anonimo
+                      Segnalato da: {report.username || 'Utente Anonimo'}
                     </p>
                     <p className="text-sm text-gray-500">
                       {new Date(report.created_at).toLocaleDateString('it-IT', {
