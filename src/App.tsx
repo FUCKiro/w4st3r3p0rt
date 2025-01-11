@@ -3,6 +3,8 @@ import { BrowserRouter } from 'react-router-dom';
 import { Map } from './components/Map';
 import { Profile } from './components/Profile';
 import { supabase } from './lib/supabase';
+import { TutorialOverlay } from './components/TutorialOverlay';
+import { OfflineIndicator } from './components/OfflineIndicator';
 import { LoadingScreen } from './components/LoadingScreen';
 
 function App() {
@@ -32,6 +34,8 @@ function App() {
   return (
     <BrowserRouter>
       <div className="relative h-screen">
+        <TutorialOverlay />
+        <OfflineIndicator />
         <Map 
           onProfileClick={() => setIsProfileOpen(true)} 
           isProfileOpen={isProfileOpen}

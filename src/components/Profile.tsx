@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase';
 import { AuthForm } from './AuthForm';
 import type { UserStats, WasteReport } from '../lib/supabase';
 import { BADGES, WASTE_IMPACT, SIZE_MULTIPLIER } from '../lib/supabase';
+import { Moon, Sun } from 'lucide-react';
 
 interface UserProfile {
   username: string;
@@ -24,6 +25,21 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
   const [username, setUsername] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'stats' | 'reports' | 'impact'>('stats');
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    // Controlla il tema salvato o la preferenza del sistema
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    setIsDark(savedTheme === 'dark' || (!savedTheme && prefersDark));
+  }, []);
+
+  useEffect(() => {
+    // Applica il tema
+    document.documentElement.classList.toggle('dark', isDark);
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  }, [isDark]);
 
   useEffect(() => {
     if (session) {
@@ -160,7 +176,7 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
         />
       )}
       <div 
-        className={`fixed inset-y-0 left-0 w-full sm:w-96 bg-white shadow-xl transform transition-transform duration-300 ease-in-out z-[2000] overflow-hidden ${
+        className={`fixed inset-y-0 left-0 w-full sm:w-96 bg-white dark:bg-gray-800 shadow-xl transform transition-transform duration-300 ease-in-out z-[2000] overflow-hidden ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -169,7 +185,7 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center">
               <div className="relative">
-                <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-2xl font-bold border-2 border-green-200">
+                <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center text-green-600 dark:text-green-400 text-2xl font-bold border-2 border-green-200 dark:border-green-700">
                   {profile?.username ? profile.username.charAt(0).toUpperCase() : '👤'}
                 </div>
                 {profile?.stats?.level && (
@@ -179,11 +195,11 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
                 )}
               </div>
               <div className="ml-4">
-                <h1 className="text-2xl font-bold text-gray-900">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
                   {session ? (profile?.username || 'Il tuo profilo') : 'Accedi'}
                 </h1>
                 {profile && (
-                  <p className="text-sm text-gray-600">{profile.email}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{profile.email}</p>
                 )}
               </div>
             </div>
@@ -228,7 +244,7 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
                         type="text"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
-                        className="flex-1 p-2 border rounded-lg focus:ring-green-500 focus:border-green-500 bg-white text-gray-900"
+                        className="flex-1 p-2 border rounded-lg focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       />
                       <button
                         onClick={updateProfile}
@@ -248,7 +264,7 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
                     </div>
                   ) : (
                     <div className="mt-1 flex justify-between items-center">
-                      <div className="p-3 bg-gray-50 rounded-lg border border-gray-200 flex-1 text-gray-900">
+                      <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 flex-1 text-gray-900 dark:text-white">
                         {profile?.username}
                       </div>
                       <button
@@ -259,6 +275,21 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
                       </button>
                     </div>
                   )}
+                </div>
+
+                {/* Theme Toggle */}
+                <div className="mt-6 pt-6 border-t">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                      Tema {isDark ? 'Scuro' : 'Chiaro'}
+                    </span>
+                    <button
+                      onClick={() => setIsDark(!isDark)}
+                      className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                    >
+                      {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                    </button>
+                  </div>
                 </div>
 
                 {/* Tabs */}
@@ -302,10 +333,10 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
                         Statistiche
                       </label>
                       <div className="space-y-4">
-                        <div className="bg-gray-50 rounded-lg border border-gray-200 p-4">
+                        <div className="bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 p-4">
                           <div className="flex justify-between items-center mb-2">
-                            <span className="text-sm text-gray-600">Livello {profile?.stats?.level || 1}</span>
-                            <span className="text-sm text-gray-600">{profile?.stats?.xp || 0} XP</span>
+                            <span className="text-sm text-gray-600 dark:text-gray-400">Livello {profile?.stats?.level || 1}</span>
+                            <span className="text-sm text-gray-600 dark:text-gray-400">{profile?.stats?.xp || 0} XP</span>
                           </div>
                           <div className="w-full bg-gray-200 rounded-full h-2">
                             <div
@@ -318,19 +349,19 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
                         </div>
                         
                         <div className="grid grid-cols-2 gap-4">
-                          <div className="bg-gray-50 rounded-lg border border-gray-200 p-4">
-                            <div className="text-2xl font-bold text-gray-900 mb-1">
+                          <div className="bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 p-4">
+                            <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
                               {profile?.stats?.reports_submitted || 0}
                             </div>
-                            <div className="text-sm text-gray-600">
+                            <div className="text-sm text-gray-600 dark:text-gray-400">
                               Segnalazioni Inviate
                             </div>
                           </div>
-                          <div className="bg-gray-50 rounded-lg border border-gray-200 p-4">
-                            <div className="text-2xl font-bold text-gray-900 mb-1">
+                          <div className="bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 p-4">
+                            <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
                               {profile?.stats?.reports_verified || 0}
                             </div>
-                            <div className="text-sm text-gray-600">
+                            <div className="text-sm text-gray-600 dark:text-gray-400">
                               Verifiche Effettuate
                             </div>
                           </div>
@@ -344,12 +375,12 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
                                 profile.stats?.badges.includes(badge.id) && (
                                   <div
                                     key={badge.id}
-                                    className="flex items-center p-3 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+                                    className="flex items-center p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                                   >
                                     <span className="text-3xl mr-3">{badge.icon}</span>
                                     <div>
-                                      <div className="font-medium">{badge.name}</div>
-                                      <div className="text-sm text-gray-600">{badge.description}</div>
+                                      <div className="font-medium dark:text-white">{badge.name}</div>
+                                      <div className="text-sm text-gray-600 dark:text-gray-400">{badge.description}</div>
                                     </div>
                                   </div>
                                 )
@@ -366,10 +397,10 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
                       profile.reports.map((report) => (
                         <div
                           key={report.id}
-                          className="bg-white rounded-lg border border-gray-200 p-4 hover:bg-gray-50 transition-colors"
+                          className="bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 p-4 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                         >
                           <div className="flex justify-between items-start mb-2">
-                            <div className="font-medium">
+                            <div className="font-medium dark:text-white">
                               {['Rifiuti Urbani', 'Rifiuti Ingombranti', 'Materiali Pericolosi', 'Discarica Abusiva', 'Rifiuti Verdi'][report.waste_type]}
                             </div>
                             <span className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -386,7 +417,7 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
                                'Archiviato'}
                             </span>
                           </div>
-                          <div className="text-sm text-gray-600 space-y-1">
+                          <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
                             <p>Dimensione: {
                               ['Piccolo (entra in un sacchetto)',
                                'Medio (entra in un\'auto)',
@@ -488,7 +519,7 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
                         </div>
                       </>
                     ) : (
-                      <div className="text-center py-8 text-gray-500">
+                      <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                         Nessun dato sull'impatto ambientale disponibile
                       </div>
                     )}
@@ -503,7 +534,7 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
                   </button>
                 </div>
               </div>
-              <div className="mt-8 pt-6 border-t text-center text-sm text-gray-500">
+              <div className="mt-8 pt-6 border-t text-center text-sm text-gray-500 dark:text-gray-400">
                 Ideato e Sviluppato da Fabio La Rocca
                 <button
                   onClick={() => window.alert('Waste Monitor v1.0\n\nQuesta applicazione è stata creata per aiutare i cittadini a segnalare e monitorare i rifiuti abbandonati nella propria zona.\n\nTutti i diritti riservati © 2025\nIdeato e Sviluppato da Fabio La Rocca')}
