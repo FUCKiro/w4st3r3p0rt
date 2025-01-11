@@ -3,6 +3,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { Map } from './components/Map';
 import { Profile } from './components/Profile';
 import { supabase } from './lib/supabase';
+import { LoadingScreen } from './components/LoadingScreen';
 
 function App() {
   const [session, setSession] = useState<any>(null);
@@ -25,9 +26,7 @@ function App() {
   }, []);
 
   if (!initialized) {
-    return <div className="min-h-screen flex items-center justify-center">
-      <div className="text-gray-600">Caricamento...</div>
-    </div>;
+    return <LoadingScreen />;
   }
   
   return (
