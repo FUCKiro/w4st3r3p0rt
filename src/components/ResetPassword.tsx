@@ -10,15 +10,39 @@ export function ResetPassword() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Verifica se siamo in un contesto di reset password
+    // Estrai il token dall'URL
     const hash = window.location.hash;
-    if (!hash.includes('type=recovery')) {
+    const accessToken = hash
+      .substring(1)
+      .split('&')
+      .find(param => param.startsWith('access_token='))
+      ?.split('=')[1];
+
+    if (!accessToken) {
       navigate('/');
+      return;
     }
+
+    // Imposta il token nella sessione
+    supabase.auth.setSession({
+      access_token: accessToken,
+      refresh_token: ''
+    });
   }, [navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validazione password
+    if (newPassword.length < 8 || 
+        !/[A-Z]/.test(newPassword) || 
+        !/[a-z]/.test(newPassword) || 
+        !/[0-9]/.test(newPassword) || 
+        !/[!@#$%^&*]/.test(newPassword)) {
+      setError('La password non soddisfa i requisiti minimi di sicurezza');
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -30,11 +54,20 @@ export function ResetPassword() {
       if (error) throw error;
 
       setSuccess(true);
+      
+      // Mostra un messaggio di successo
+      alert('Password aggiornata con successo! Verrai reindirizzato alla pagina di login.');
+      
+      // Effettua il logout
+      await supabase.auth.signOut();
+      
+      // Reindirizza dopo un breve delay
       setTimeout(() => {
         navigate('/');
-      }, 3000);
+      }, 1500);
     } catch (err) {
-      setError((err as Error).message);
+      console.error('Error resetting password:', err);
+      setError('Errore durante il reset della password. Riprova più tardi.');
     } finally {
       setLoading(false);
     }
