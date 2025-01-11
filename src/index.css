@@ -87,7 +87,7 @@ body {
 /* Mobile optimizations */
 @media (max-width: 640px) {
   .leaflet-control-zoom {
-    margin-bottom: 80px !important;
+    margin-bottom: 100px !important;
   }
   
   .leaflet-control-attribution {
@@ -95,6 +95,13 @@ body {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+}
+
+/* Adjust recenter button position on mobile */
+@media (max-width: 640px) {
+  .bottom-24 {
+    bottom: 7rem;
   }
 }
 
