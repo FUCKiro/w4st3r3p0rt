@@ -23,7 +23,8 @@ export function AuthForm() {
     setError(null);
 
     try {
-      const resetUrl = `${window.location.origin}/reset-password`;
+      const siteUrl = import.meta.env.VITE_SITE_URL || window.location.origin;
+      const resetUrl = `${siteUrl}/reset-password`;
 
       const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
         redirectTo: resetUrl
@@ -32,8 +33,8 @@ export function AuthForm() {
       if (error) throw error;
 
       setResetSuccess(true);
-      setError(null);
-      alert(`Ti abbiamo inviato un'email con le istruzioni per reimpostare la password.\n\nDopo aver cliccato sul link nell'email, verrai reindirizzato all'applicazione dove potrai inserire la nuova password.\n\nAssicurati di utilizzare lo stesso dispositivo/browser per completare il processo.`);
+      alert(`Ti abbiamo inviato un'email con le istruzioni per reimpostare la password.\n\nDopo aver cliccato sul link nell'email, verrai reindirizzato all'applicazione dove potrai inserire la nuova password.`);
+      setShowResetForm(false);
     } catch (err) {
       setError((err as Error).message);
     } finally {

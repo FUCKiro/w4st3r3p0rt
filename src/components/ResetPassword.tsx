@@ -12,13 +12,11 @@ export function ResetPassword() {
   useEffect(() => {
     // Estrai il token dall'URL
     const hash = window.location.hash;
-    const accessToken = hash
-      .substring(1)
-      .split('&')
-      .find(param => param.startsWith('access_token='))
-      ?.split('=')[1];
+    const params = new URLSearchParams(hash.substring(1));
+    const accessToken = params.get('access_token');
+    const type = params.get('type');
 
-    if (!accessToken) {
+    if (!accessToken || type !== 'recovery') {
       navigate('/');
       return;
     }
@@ -26,7 +24,7 @@ export function ResetPassword() {
     // Imposta il token nella sessione
     supabase.auth.setSession({
       access_token: accessToken,
-      refresh_token: ''
+      refresh_token: params.get('refresh_token') || ''
     });
   }, [navigate]);
 
