@@ -73,19 +73,27 @@ function LocationMarker() {
   const map = useMap();
   const [initialized, setInitialized] = useState(false);
 
+  const zoomToShowRadius = () => {
+    // Calculate zoom level to show 250m radius
+    const radiusInMeters = 250;
+    const metersPerPixel = radiusInMeters / (Math.min(map.getSize().x, map.getSize().y) / 2);
+    const zoomLevel = Math.floor(Math.log2(40075016.686 * Math.abs(Math.cos(map.getCenter().lat * Math.PI/180)) / metersPerPixel / 256));
+    return Math.min(zoomLevel, 18); // Cap at zoom level 18
+  };
+
   useEffect(() => {
     if (!initialized) {
       map.locate({
-        setView: true,
-        maxZoom: 18,
+        setView: false,
         enableHighAccuracy: true
       }).on("locationfound", (e: LocationEvent) => {
         setPosition([e.latlng.lat, e.latlng.lng]);
+        map.setView(e.latlng, zoomToShowRadius());
         setInitialized(true);
       }).on("locationerror", (e: LeafletEvent) => {
         console.error("Error getting location:", e);
         // Fallback to default location (Italy)
-        map.flyTo([41.9028, 12.4964], 17);
+        map.flyTo([41.9028, 12.4964], zoomToShowRadius());
         setInitialized(true);
       });
     }
@@ -114,9 +122,17 @@ function MapClickHandler({ onMapClick }: { onMapClick: () => void }) {
 function RecenterButton() {
   const map = useMap();
 
+  const zoomToShowRadius = () => {
+    // Calculate zoom level to show 250m radius
+    const radiusInMeters = 250;
+    const metersPerPixel = radiusInMeters / (Math.min(map.getSize().x, map.getSize().y) / 2);
+    const zoomLevel = Math.floor(Math.log2(40075016.686 * Math.abs(Math.cos(map.getCenter().lat * Math.PI/180)) / metersPerPixel / 256));
+    return Math.min(zoomLevel, 18); // Cap at zoom level 18
+  };
+
   const handleRecenter = () => {
     map.locate().on("locationfound", (e: LocationEvent) => {
-      map.flyTo(e.latlng, 15);
+      map.flyTo(e.latlng, zoomToShowRadius());
     });
   };
 

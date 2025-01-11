@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { AuthForm } from './AuthForm';
 import type { UserStats, WasteReport } from '../lib/supabase';
-import { BADGES } from '../lib/supabase';
+import { BADGES, WASTE_IMPACT, SIZE_MULTIPLIER } from '../lib/supabase';
 
 interface UserProfile {
   username: string;
@@ -23,7 +23,7 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
   const [editing, setEditing] = useState(false);
   const [username, setUsername] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'stats' | 'reports'>('stats');
+  const [activeTab, setActiveTab] = useState<'stats' | 'reports' | 'impact'>('stats');
 
   useEffect(() => {
     if (session) {
@@ -283,6 +283,16 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
                   >
                     Le Mie Segnalazioni
                   </button>
+                  <button
+                    onClick={() => setActiveTab('impact')}
+                    className={`flex-1 py-3 text-sm font-medium border-b-2 ${
+                      activeTab === 'impact'
+                        ? 'border-green-600 text-green-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700'
+                    }`}
+                  >
+                    Impatto Ambientale
+                  </button>
                 </div>
 
                 {activeTab === 'stats' ? (
@@ -350,7 +360,7 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
                       </div>
                     </div>
                   </div>
-                ) : (
+                ) : activeTab === 'reports' ? (
                   <div className="space-y-4">
                     {profile?.reports && profile.reports.length > 0 ? (
                       profile.reports.map((report) => (
@@ -402,8 +412,88 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
                       </div>
                     )}
                   </div>
-                )}
+                ) : activeTab === 'impact' ? (
+                  <div className="space-y-6">
+                    {profile?.reports && profile.reports.length > 0 ? (
+                      <>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="bg-green-50 rounded-lg border border-green-200 p-4">
+                            <div className="text-2xl font-bold text-green-700 mb-1">
+                              {profile.reports.reduce((total, report) => {
+                                const impact = WASTE_IMPACT[report.waste_type as keyof typeof WASTE_IMPACT];
+                                const multiplier = SIZE_MULTIPLIER[report.size as keyof typeof SIZE_MULTIPLIER];
+                                return total + (impact.avg_weight * multiplier * impact.co2_per_kg);
+                              }, 0).toFixed(1)} kg
+                            </div>
+                            <div className="text-sm text-green-600">
+                              CO₂ Risparmiata
+                            </div>
+                          </div>
+                          <div className="bg-green-50 rounded-lg border border-green-200 p-4">
+                            <div className="text-2xl font-bold text-green-700 mb-1">
+                              {profile.reports.reduce((total, report) => {
+                                const impact = WASTE_IMPACT[report.waste_type as keyof typeof WASTE_IMPACT];
+                                const multiplier = SIZE_MULTIPLIER[report.size as keyof typeof SIZE_MULTIPLIER];
+                                return total + (impact.avg_weight * multiplier);
+                              }, 0).toFixed(0)} kg
+                            </div>
+                            <div className="text-sm text-green-600">
+                              Rifiuti Recuperati
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="bg-white rounded-lg border border-gray-200 p-4">
+                          <h3 className="font-medium mb-3">Dettaglio per Tipo di Rifiuto</h3>
+                          <div className="space-y-3">
+                            {Object.entries(
+                              profile.reports.reduce((acc, report) => {
+                                const type = report.waste_type;
+                                if (!acc[type]) acc[type] = 0;
+                                const impact = WASTE_IMPACT[type as keyof typeof WASTE_IMPACT];
+                                const multiplier = SIZE_MULTIPLIER[report.size as keyof typeof SIZE_MULTIPLIER];
+                                acc[type] += impact.avg_weight * multiplier;
+                                return acc;
+                              }, {} as Record<number, number>)
+                            ).map(([type, weight]) => (
+                              <div key={type} className="flex justify-between items-center">
+                                <span className="text-gray-600">
+                                  {['Rifiuti Urbani', 'Rifiuti Ingombranti', 'Materiali Pericolosi', 'Discarica Abusiva', 'Rifiuti Verdi'][Number(type)]}
+                                </span>
+                                <span className="font-medium">{weight.toFixed(0)} kg</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
 
+                        <div className="bg-white rounded-lg border border-gray-200 p-4">
+                          <h3 className="font-medium mb-3">Equivalente a:</h3>
+                          <div className="space-y-2 text-sm text-gray-600">
+                            {(() => {
+                              const totalCO2 = profile.reports.reduce((total, report) => {
+                                const impact = WASTE_IMPACT[report.waste_type as keyof typeof WASTE_IMPACT];
+                                const multiplier = SIZE_MULTIPLIER[report.size as keyof typeof SIZE_MULTIPLIER];
+                                return total + (impact.avg_weight * multiplier * impact.co2_per_kg);
+                              }, 0);
+                              
+                              return (
+                                <>
+                                  <p>🚗 {(totalCO2 / 2.3).toFixed(0)} km percorsi in auto</p>
+                                  <p>🌳 {(totalCO2 / 22).toFixed(1)} alberi necessari per un anno</p>
+                                  <p>💡 {(totalCO2 * 3.3).toFixed(0)} ore di lampada LED accesa</p>
+                                </>
+                              );
+                            })()}
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="text-center py-8 text-gray-500">
+                        Nessun dato sull'impatto ambientale disponibile
+                      </div>
+                    )}
+                  </div>
+                ) : null}
                 <div className="pt-6 border-t">
                   <button
                     onClick={handleLogout}

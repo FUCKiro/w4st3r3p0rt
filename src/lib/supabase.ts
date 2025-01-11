@@ -45,7 +45,48 @@ export interface UserStats {
   badges: string[];
   created_at: string;
   updated_at: string;
+  environmental_impact?: {
+    co2_saved: number;
+    waste_recovered: number;
+  };
 }
+
+// Coefficienti di impatto ambientale per tipo di rifiuto (kg CO2 per kg di rifiuto)
+export const WASTE_IMPACT = {
+  // Rifiuti Urbani
+  0: {
+    co2_per_kg: 3.0,
+    avg_weight: 5 // kg
+  },
+  // Rifiuti Ingombranti
+  1: {
+    co2_per_kg: 4.0,
+    avg_weight: 50 // kg
+  },
+  // Materiali Pericolosi
+  2: {
+    co2_per_kg: 6.5,
+    avg_weight: 10 // kg
+  },
+  // Discarica Abusiva
+  3: {
+    co2_per_kg: 4.5,
+    avg_weight: 200 // kg
+  },
+  // Rifiuti Verdi
+  4: {
+    co2_per_kg: 1.8,
+    avg_weight: 25 // kg
+  }
+};
+
+// Coefficienti per dimensione
+export const SIZE_MULTIPLIER = {
+  0: 0.5,  // Piccolo
+  1: 1,    // Medio
+  2: 2,    // Grande
+  3: 4     // Molto Grande
+};
 
 export const BADGES = {
   first_report: {
