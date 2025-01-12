@@ -327,6 +327,7 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
   const submitReport = async () => {
     if (!userLocation) return;
 
+    let newStats;
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
@@ -354,19 +355,25 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
       if (!stats) {
         // Create new stats for first-time user
         const initialBadges = ['first_report'];
-        const { error: statsError } = await supabase.from('user_stats').insert({
+        const { data: newUserStats, error: statsError } = await supabase
+          .from('user_stats')
+          .insert({
           user_id: user.id,
           xp: 10,
           level: 1,
           reports_submitted: 1,
           reports_verified: 0,
           badges: initialBadges
-        });
+        })
+        .select()
+        .single();
         
         if (statsError) {
           console.error('Error creating user stats:', statsError);
           throw statsError;
         }
+        
+        newStats = newUserStats;
       } else {
         const newXP = stats.xp + 10;
         const newLevel = Math.floor(newXP / 100) + 1;
@@ -384,7 +391,7 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
           newBadges.push('ten_reports');
         }
 
-        const { error: updateError } = await supabase
+        const { data: updatedStats, error: updateError } = await supabase
           .from('user_stats')
           .update({
             xp: newXP,
@@ -392,19 +399,28 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
             reports_submitted: newReportsSubmitted,
             badges: newBadges
           })
-          .eq('user_id', user.id);
+          .eq('user_id', user.id)
+          .select()
+          .single();
 
         if (updateError) {
           console.error('Error updating user stats:', updateError);
           throw updateError;
         }
+        
+        newStats = updatedStats;
       }
 
       setShowReportForm(false);
       setNotes('');
       await loadReports();
-      // Ricarica il profilo per aggiornare le statistiche visualizzate
-      window.dispatchEvent(new Event('reload-profile'));
+      
+      // Aggiorna le statistiche nel profilo
+      if (newStats) {
+        window.dispatchEvent(new CustomEvent('update-profile-stats', { 
+          detail: { stats: newStats }
+        }));
+      }
       
     } catch (error) {
       console.error('Error submitting report:', error);

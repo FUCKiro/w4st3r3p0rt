@@ -51,12 +51,20 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
       setLoading(false);
     }
     
-    // Ascolta l'evento di ricaricamento del profilo
-    const handleReload = () => loadProfile();
-    window.addEventListener('reload-profile', handleReload);
+    // Ascolta l'evento di aggiornamento delle statistiche
+    const handleStatsUpdate = (event: CustomEvent<{ stats: any }>) => {
+      if (profile) {
+        setProfile({
+          ...profile,
+          stats: event.detail.stats
+        });
+      }
+    };
+    
+    window.addEventListener('update-profile-stats', handleStatsUpdate as EventListener);
     
     return () => {
-      window.removeEventListener('reload-profile', handleReload);
+      window.removeEventListener('update-profile-stats', handleStatsUpdate as EventListener);
     };
   }, [session]); // Aggiungi session come dipendenza
 

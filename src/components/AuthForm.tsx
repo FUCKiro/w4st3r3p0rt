@@ -24,8 +24,10 @@ export function AuthForm() {
     setValidationErrors({ username: '', email: '', password: '' });
 
     try {
-      // Usa direttamente l'URL completo senza manipolazioni
-      const resetUrl = 'https://imonnezza.netlify.app/reset-password';
+      // Costruisci l'URL base usando VITE_SITE_URL o window.location.origin
+      const baseUrl = import.meta.env.VITE_SITE_URL || window.location.origin;
+      // Rimuovi eventuali slash finali e aggiungi il percorso
+      const resetUrl = `${baseUrl.replace(/\/+$/, '')}/reset-password`;
 
       const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
         redirectTo: resetUrl
@@ -34,7 +36,7 @@ export function AuthForm() {
       if (error) throw error;
 
       setResetSuccess(true);
-      alert(`Ti abbiamo inviato un'email con le istruzioni per reimpostare la password.\n\nIMPORTANTE: Se il link nell'email non funziona:\n1. Copia il link dall'email\n2. Rimuovi eventuali doppi slash (//) dall'URL\n3. Incolla l'URL corretto nel browser`);
+      alert(`Ti abbiamo inviato un'email con le istruzioni per reimpostare la password.\n\nControlla la tua casella di posta e segui le istruzioni nell'email per completare il reset della password.`);
       setShowResetForm(false);
     } catch (err) {
       setError((err as Error).message);
@@ -173,10 +175,10 @@ export function AuthForm() {
   return (
     <div className="w-full space-y-6">
       <div className="text-center space-y-2">
-        <h2 className="text-2xl font-bold text-gray-900">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
           Benvenuto su Waste Monitor
         </h2>
-        <p className="text-gray-600">
+        <p className="text-gray-600 dark:text-gray-300">
           Unisciti alla nostra comunità per rendere il mondo più pulito.
           Segnala, verifica e monitora i rifiuti abbandonati nella tua zona.
         </p>
@@ -202,7 +204,7 @@ export function AuthForm() {
                 onChange={(e) => setUsername(e.target.value)}
               />
               {validationErrors.username && (
-                <p className="mt-1 text-sm text-red-600">{validationErrors.username}</p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{validationErrors.username}</p>
               )}
             </div>
           )}
@@ -226,7 +228,7 @@ export function AuthForm() {
               onChange={(e) => setEmail(e.target.value)}
             />
             {validationErrors.email && (
-              <p className="mt-1 text-sm text-red-600">{validationErrors.email}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{validationErrors.email}</p>
             )}
           </div>
           <div>
