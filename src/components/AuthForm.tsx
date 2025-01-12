@@ -24,8 +24,9 @@ export function AuthForm() {
     setValidationErrors({ username: '', email: '', password: '' });
 
     try {
-      const siteUrl = import.meta.env.VITE_SITE_URL || window.location.origin;
-      const resetUrl = `${siteUrl.replace(/\/$/, '')}/reset-password`;
+      // Costruisci l'URL base rimuovendo eventuali slash finali
+      const baseUrl = (import.meta.env.VITE_SITE_URL || window.location.origin).replace(/\/+$/, '');
+      const resetUrl = `${baseUrl}/reset-password`;
 
       const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
         redirectTo: resetUrl
