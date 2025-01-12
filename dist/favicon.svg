@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Bidone -->
+  <rect x="8" y="6" width="16" height="22" rx="2" fill="#16A34A"/>
+  <!-- Coperchio -->
+  <rect x="6" y="4" width="20" height="3" rx="1" fill="#16A34A"/>
+  <!-- Linee decorative -->
+  <path d="M12 12L12 26" stroke="white" stroke-width="2" stroke-linecap="round"/>
+  <path d="M16 12L16 26" stroke="white" stroke-width="2" stroke-linecap="round"/>
+  <path d="M20 12L20 26" stroke="white" stroke-width="2" stroke-linecap="round"/>
+</svg>
