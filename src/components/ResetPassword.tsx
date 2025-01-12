@@ -12,9 +12,15 @@ export function ResetPassword() {
   useEffect(() => {
     // Estrai il token dall'URL
     const hash = window.location.hash;
+    if (!hash) {
+      navigate('/');
+      return;
+    }
+
     const params = new URLSearchParams(hash.substring(1));
     const accessToken = params.get('access_token');
     const type = params.get('type');
+    const refreshToken = params.get('refresh_token');
 
     if (!accessToken || type !== 'recovery') {
       navigate('/');
@@ -22,10 +28,22 @@ export function ResetPassword() {
     }
 
     // Imposta il token nella sessione
-    supabase.auth.setSession({
-      access_token: accessToken,
-      refresh_token: params.get('refresh_token') || ''
-    });
+    (async () => {
+      try {
+        const { error } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken || ''
+        });
+        
+        if (error) {
+          console.error('Error setting session:', error);
+          navigate('/');
+        }
+      } catch (err) {
+        console.error('Error setting session:', err);
+        navigate('/');
+      }
+    })();
   }, [navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
