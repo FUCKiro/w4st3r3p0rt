@@ -24,9 +24,9 @@ export function AuthForm() {
     setValidationErrors({ username: '', email: '', password: '' });
 
     try {
-      // Costruisci l'URL base rimuovendo eventuali slash finali
-      const baseUrl = (import.meta.env.VITE_SITE_URL || window.location.origin).replace(/\/+$/, '');
-      const resetUrl = `${baseUrl}/reset-password`;
+      // Assicurati che l'URL non contenga doppi slash
+      const siteUrl = import.meta.env.VITE_SITE_URL || window.location.origin;
+      const resetUrl = new URL('/reset-password', siteUrl).toString();
 
       const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
         redirectTo: resetUrl
@@ -35,7 +35,7 @@ export function AuthForm() {
       if (error) throw error;
 
       setResetSuccess(true);
-      alert(`Ti abbiamo inviato un'email con le istruzioni per reimpostare la password.\n\nDopo aver cliccato sul link nell'email, verrai reindirizzato all'applicazione dove potrai inserire la nuova password.`);
+      alert(`Ti abbiamo inviato un'email con le istruzioni per reimpostare la password.\n\nControlla la tua casella di posta (anche la cartella spam) e segui le istruzioni nell'email per reimpostare la password.`);
       setShowResetForm(false);
     } catch (err) {
       setError((err as Error).message);
