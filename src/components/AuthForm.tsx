@@ -24,9 +24,7 @@ export function AuthForm() {
     setValidationErrors({ username: '', email: '', password: '' });
 
     try {
-      // Usa direttamente l'URL completo senza manipolazioni
-      const baseUrl = 'https://imonnezza.netlify.app';
-      const resetUrl = `${baseUrl}/reset-password`;
+      const resetUrl = 'https://imonnezza.netlify.app/reset-password';
 
       const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
         redirectTo: resetUrl
@@ -35,7 +33,7 @@ export function AuthForm() {
       if (error) throw error;
 
       setResetSuccess(true);
-      alert(`Ti abbiamo inviato un'email con le istruzioni per reimpostare la password.\n\nIMPORTANTE:\n1. Controlla la tua casella di posta (anche lo spam)\n2. Clicca sul link nell'email\n3. Verrai reindirizzato alla pagina di reset dove potrai inserire la nuova password`);
+      alert(`Ti abbiamo inviato un'email con le istruzioni per reimpostare la password.\n\nIMPORTANTE:\n1. Controlla la tua casella di posta (anche lo spam)\n2. Clicca sul link nell'email\n3. Quando il link ti porta su Supabase, clicca su "Continue" per essere reindirizzato alla pagina di reset\n4. Inserisci la nuova password`);
       setShowResetForm(false);
     } catch (err) {
       setError((err as Error).message);
