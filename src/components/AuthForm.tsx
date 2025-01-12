@@ -28,8 +28,7 @@ export function AuthForm() {
       const resetUrl = `${siteUrl}/reset-password`;
 
       const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-        redirectTo: resetUrl,
-        emailRedirectTo: resetUrl
+        redirectTo: resetUrl
       });
 
       if (error) throw error;
