@@ -21,6 +21,7 @@ export function AuthForm() {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setValidationErrors({ username: '', email: '', password: '' });
 
     try {
       const siteUrl = import.meta.env.VITE_SITE_URL || window.location.origin;
@@ -99,7 +100,7 @@ export function AuthForm() {
       return false;
     }
     
-    return data.length === 0;
+    return !data || data.length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
