@@ -24,7 +24,7 @@ export function AuthForm() {
     setValidationErrors({ username: '', email: '', password: '' });
 
     try {
-      const resetUrl = 'https://imonnezza.netlify.app/reset-password';
+      const resetUrl = import.meta.env.VITE_SITE_URL + '/reset-password';
 
       const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
         redirectTo: resetUrl
@@ -33,7 +33,7 @@ export function AuthForm() {
       if (error) throw error;
 
       setResetSuccess(true);
-      alert(`Ti abbiamo inviato un'email con le istruzioni per reimpostare la password.\n\nIMPORTANTE:\n1. Controlla la tua casella di posta (anche lo spam)\n2. Clicca sul link nell'email\n3. Quando il link ti porta su Supabase, clicca su "Continue" per essere reindirizzato alla pagina di reset\n4. Inserisci la nuova password`);
+      alert(`Ti abbiamo inviato un'email con le istruzioni per reimpostare la password.\n\nIMPORTANTE:\n1. Controlla la tua casella di posta (anche lo spam)\n2. Clicca sul link nell'email\n3. Verrai reindirizzato alla pagina di reset dove potrai inserire la nuova password`);
       setShowResetForm(false);
     } catch (err) {
       setError((err as Error).message);
@@ -194,9 +194,9 @@ export function AuthForm() {
                 name="username"
                 type="text"
                 required
-                className={`appearance-none rounded-none relative block w-full px-3 py-2 border dark:bg-gray-700 dark:text-white dark:border-gray-600 ${
+                className={`appearance-none rounded-none relative block w-full px-3 py-2 border dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:placeholder-gray-400 ${
                   validationErrors.username ? 'border-red-300' : 'border-gray-300'
-                } placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-t-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm`}
+                } placeholder-gray-500 text-gray-900 dark:text-white rounded-t-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm`}
                 placeholder="Nome Utente"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -216,9 +216,9 @@ export function AuthForm() {
               type="email"
               autoComplete="email"
               required
-              className={`appearance-none rounded-none relative block w-full px-3 py-2 border dark:bg-gray-700 dark:text-white dark:border-gray-600 ${
+              className={`appearance-none rounded-none relative block w-full px-3 py-2 border dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:placeholder-gray-400 ${
                 validationErrors.email ? 'border-red-300' : 'border-gray-300'
-              } placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm ${
+              } placeholder-gray-500 text-gray-900 dark:text-white focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm ${
                 isLogin && !username ? 'rounded-t-md' : ''
               }`}
               placeholder="Indirizzo Email"
@@ -240,9 +240,9 @@ export function AuthForm() {
                 type="password"
                 autoComplete="current-password"
                 required
-                className={`appearance-none rounded-none relative block w-full px-3 py-2 border dark:bg-gray-700 dark:text-white dark:border-gray-600 ${
+                className={`appearance-none rounded-none relative block w-full px-3 py-2 border dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:placeholder-gray-400 ${
                   validationErrors.password ? 'border-red-300' : 'border-gray-300'
-                } placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-b-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm`}
+                } placeholder-gray-500 text-gray-900 dark:text-white rounded-b-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm`}
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
