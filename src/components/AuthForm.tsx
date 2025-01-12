@@ -25,7 +25,7 @@ export function AuthForm() {
 
     try {
       const siteUrl = import.meta.env.VITE_SITE_URL || window.location.origin;
-      const resetUrl = `${siteUrl}/reset-password`;
+      const resetUrl = new URL('/reset-password', siteUrl).toString();
 
       const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
         redirectTo: resetUrl
@@ -194,9 +194,9 @@ export function AuthForm() {
                 name="username"
                 type="text"
                 required
-                className={`appearance-none rounded-none relative block w-full px-3 py-2 border ${
+                className={`appearance-none rounded-none relative block w-full px-3 py-2 border dark:bg-gray-700 dark:text-white dark:border-gray-600 ${
                   validationErrors.username ? 'border-red-300' : 'border-gray-300'
-                } placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm`}
+                } placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-t-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm`}
                 placeholder="Nome Utente"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -216,9 +216,9 @@ export function AuthForm() {
               type="email"
               autoComplete="email"
               required
-              className={`appearance-none rounded-none relative block w-full px-3 py-2 border ${
+              className={`appearance-none rounded-none relative block w-full px-3 py-2 border dark:bg-gray-700 dark:text-white dark:border-gray-600 ${
                 validationErrors.email ? 'border-red-300' : 'border-gray-300'
-              } placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm ${
+              } placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm ${
                 isLogin && !username ? 'rounded-t-md' : ''
               }`}
               placeholder="Indirizzo Email"
@@ -240,18 +240,18 @@ export function AuthForm() {
                 type="password"
                 autoComplete="current-password"
                 required
-                className={`appearance-none rounded-none relative block w-full px-3 py-2 border ${
+                className={`appearance-none rounded-none relative block w-full px-3 py-2 border dark:bg-gray-700 dark:text-white dark:border-gray-600 ${
                   validationErrors.password ? 'border-red-300' : 'border-gray-300'
-                } placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm`}
+                } placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-b-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm`}
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
               {validationErrors.password && (
-                <p className="mt-1 text-sm text-red-600">{validationErrors.password}</p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{validationErrors.password}</p>
               )}
               {!isLogin && (
-                <div className="mt-2 text-sm text-gray-600 space-y-1">
+                <div className="mt-2 text-sm text-gray-600 dark:text-gray-400 space-y-1">
                   <p>La password deve contenere:</p>
                   <ul className="list-disc pl-5 space-y-1">
                     <li className={`${password.length >= 8 ? 'text-green-600' : ''}`}>
@@ -277,7 +277,7 @@ export function AuthForm() {
         </div>
 
         {error && (
-          <div className="text-red-500 text-sm text-center">{error}</div>
+          <div className="text-red-500 dark:text-red-400 text-sm text-center">{error}</div>
         )}
 
         <div>
@@ -295,7 +295,7 @@ export function AuthForm() {
             <button
               type="button"
               onClick={() => setShowResetForm(true)}
-              className="font-medium text-green-600 hover:text-green-500 mb-4 block w-full"
+              className="font-medium text-green-600 dark:text-green-500 hover:text-green-500 dark:hover:text-green-400 mb-4 block w-full"
             >
               Password dimenticata?
             </button>
@@ -303,7 +303,7 @@ export function AuthForm() {
           <button
             type="button"
             onClick={() => setIsLogin(!isLogin)}
-            className="font-medium text-green-600 hover:text-green-500"
+            className="font-medium text-green-600 dark:text-green-500 hover:text-green-500 dark:hover:text-green-400"
           >
             {isLogin
               ? "Non hai un account? Registrati"
