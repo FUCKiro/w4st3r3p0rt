@@ -494,8 +494,11 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
                     </p>
                   )}
                   <div className="mt-2 pt-2 border-t border-gray-200">
-                    <p className="text-sm text-gray-500">
-                      Segnalato da: {report.username || 'Utente Anonimo'}
+                    <p className="text-sm text-gray-500 flex items-center">
+                      <span className="font-medium mr-1">Segnalato da:</span>
+                      <span className="bg-gray-100 dark:bg-gray-600 px-2 py-0.5 rounded-full">
+                        {report.username || 'Utente Anonimo'}
+                      </span>
                     </p>
                     <p className="text-sm text-gray-500">
                       {new Date(report.created_at).toLocaleDateString('it-IT', {

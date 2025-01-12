@@ -153,6 +153,7 @@ export function AuthForm() {
             .from('user_stats')
             .insert({
               user_id: user.id,
+              username: username,
               xp: 0,
               level: 1,
               reports_submitted: 0,
