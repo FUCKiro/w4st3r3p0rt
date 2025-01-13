@@ -431,14 +431,14 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
         const newBadges = [...(stats.badges || [])];
 
         // Check for new badges
-        if (!newBadges.includes('first_report')) {
-          newBadges.push('first_report');
+        if (!newBadges.includes(BADGES.first_report.id)) {
+          newBadges.push(BADGES.first_report.id);
         }
-        if (newReportsSubmitted === 5 && !newBadges.includes('five_reports')) {
-          newBadges.push('five_reports');
+        if (newReportsSubmitted === 5 && !newBadges.includes(BADGES.five_reports.id)) {
+          newBadges.push(BADGES.five_reports.id);
         }
-        if (newReportsSubmitted === 10 && !newBadges.includes('ten_reports')) {
-          newBadges.push('ten_reports');
+        if (newReportsSubmitted === 10 && !newBadges.includes(BADGES.ten_reports.id)) {
+          newBadges.push(BADGES.ten_reports.id);
         }
 
         const { data: updatedStats, error: updateError } = await supabase
@@ -464,7 +464,7 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
       // Mostra il popup XP
       setXpEarned({
         xp: 10,
-        badges: newStats.badges.filter(badge => !stats?.badges?.includes(badge))
+        badges: (newStats.badges || []).filter((badge: string) => !(stats?.badges || []).includes(badge))
       });
 
       setShowReportForm(false);
