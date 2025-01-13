@@ -422,7 +422,7 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
       // Mostra il popup XP
       setXpEarned({
         xp: 10,
-        badges: newStats.badges.filter(badge => !stats?.badges?.includes(badge))
+        badges: newStats.badges.filter((badge: string) => !stats?.badges?.includes(badge))
       });
 
       setShowReportForm(false);
