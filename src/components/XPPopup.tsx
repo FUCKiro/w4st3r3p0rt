@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { Trophy } from 'lucide-react';
-import { BADGES } from '../lib/supabase';
 
 interface XPPopupProps {
   xp: number;
@@ -37,10 +36,9 @@ export function XPPopup({ xp, badges = [], onClose }: XPPopupProps) {
                   {badges.map((badge, index) => (
                     <div 
                       key={index}
-                      className="flex items-center bg-white dark:bg-green-800 rounded-full px-2 py-1 text-sm text-green-700 dark:text-green-200 border border-green-200 dark:border-green-600"
+                      className="bg-white dark:bg-green-800 rounded-full px-2 py-1 text-sm text-green-700 dark:text-green-200 border border-green-200 dark:border-green-600"
                     >
-                      <span className="mr-1">{BADGES[badge as keyof typeof BADGES]?.icon}</span>
-                      {BADGES[badge as keyof typeof BADGES]?.name}
+                      {badge}
                     </div>
                   ))}
                 </div>
