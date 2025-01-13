@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents, Circle as LeafletCircle } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents, Circle as LeafletCircle, useMapEvent } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Trash2, Sofa, AlertTriangle, Trash, Leaf, Package, Car, Truck, Building, Crosshair, UserCircle2, PlusCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import type { WasteReport } from '../lib/supabase';
 import { User, Session } from '@supabase/supabase-js';
+import { XPPopup } from './XPPopup';
 import { icon, divIcon, LeafletEvent, LeafletMouseEvent, LocationEvent } from 'leaflet';
 
 // Function to calculate distance between two points in meters
@@ -192,12 +193,54 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const [nearbyReports, setNearbyReports] = useState<WasteReport[]>([]);
   const RADIUS = 250; // 250 meters radius
+  const ZOOM_THRESHOLD = 14; // Soglia di zoom per mostrare tutti i rifiuti
   const [mapInitialized, setMapInitialized] = useState(false);
+  const [xpEarned, setXpEarned] = useState<{ xp: number; badges: string[] } | null>(null);
+  const [allReports, setAllReports] = useState<WasteReport[]>([]);
+  const [visibleReports, setVisibleReports] = useState<WasteReport[]>([]);
+  const [currentZoom, setCurrentZoom] = useState(6);
+  const [mapCenter, setMapCenter] = useState<[number, number]>([41.9028, 12.4964]);
 
   useEffect(() => {
     loadReports();
     getCurrentLocation();
   }, []);
+
+  // Funzione per filtrare i rifiuti in base allo zoom e alla posizione
+  const filterReports = (reports: WasteReport[], zoom: number, center: [number, number]) => {
+    if (zoom >= ZOOM_THRESHOLD) {
+      // Mostra tutti i rifiuti nell'area visibile
+      return reports;
+    } else {
+      // Mostra solo i rifiuti di grandi dimensioni (size >= 2)
+      return reports.filter(report => {
+        const distance = calculateDistance(
+          center[0],
+          center[1],
+          report.latitude,
+          report.longitude
+        );
+        // Mostra rifiuti grandi entro un raggio che aumenta con lo zoom
+        const visibilityRadius = Math.pow(2, 20 - zoom) * 1000; // Raggio in metri che aumenta esponenzialmente con lo zoom out
+        return report.size >= 2 && distance <= visibilityRadius;
+      });
+    }
+  };
+
+  // Componente per gestire gli eventi della mappa
+  function MapEventHandler() {
+    const map = useMapEvent('moveend', () => {
+      const center = map.getCenter();
+      setMapCenter([center.lat, center.lng]);
+      setCurrentZoom(map.getZoom());
+    });
+
+    useEffect(() => {
+      setVisibleReports(filterReports(allReports, currentZoom, mapCenter));
+    }, [currentZoom, mapCenter, allReports]);
+
+    return null;
+  }
 
   const getCurrentLocation = () => {
     if (navigator.geolocation) {
@@ -229,6 +272,7 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
         return;
       }
 
+      setAllReports(data || []);
       // Filter reports within radius if user location is available
       if (userLocation) {
         const filtered = (data || []).filter((report: WasteReport) => {
@@ -316,6 +360,12 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
             badges: Array.from(new Set(newBadges)) // Rimuove eventuali duplicati
           })
           .eq('user_id', user.id);
+
+        // Mostra il popup XP
+        setXpEarned({
+          xp: 5,
+          badges: newBadges.filter(badge => !stats.badges?.includes(badge))
+        });
       }
 
       loadReports();
@@ -410,6 +460,12 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
         
         newStats = updatedStats;
       }
+      
+      // Mostra il popup XP
+      setXpEarned({
+        xp: 10,
+        badges: newStats.badges.filter(badge => !stats?.badges?.includes(badge))
+      });
 
       setShowReportForm(false);
       setNotes('');
@@ -437,6 +493,7 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
         minZoom={3}
         zoomControl={false}
       >
+        <MapEventHandler />
         <MapClickHandler onMapClick={() => setShowReportForm(false)} />
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -457,7 +514,7 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
             }}
           />
         )}
-        {nearbyReports.map((report) => (
+        {visibleReports.map((report) => (
           <Marker
             key={report.id}
             position={[report.latitude, report.longitude]}
@@ -639,6 +696,14 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
           </div>
           </div>
         </div>
+      )}
+      
+      {xpEarned && (
+        <XPPopup
+          xp={xpEarned.xp}
+          badges={xpEarned.badges}
+          onClose={() => setXpEarned(null)}
+        />
       )}
     </div>
   );

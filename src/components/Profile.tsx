@@ -16,9 +16,10 @@ interface ProfileProps {
   isOpen: boolean;
   onClose: () => void;
   session: any;
+  stats?: any;
 }
 
-export function Profile({ isOpen, onClose, session }: ProfileProps) {
+export function Profile({ isOpen, onClose, session, stats }: ProfileProps) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
@@ -50,23 +51,17 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
       setProfile(null);
       setLoading(false);
     }
-    
-    // Ascolta l'evento di aggiornamento delle statistiche
-    const handleStatsUpdate = (event: CustomEvent<{ stats: any }>) => {
-      if (profile) {
-        setProfile({
-          ...profile,
-          stats: event.detail.stats
-        });
-      }
-    };
-    
-    window.addEventListener('update-profile-stats', handleStatsUpdate as EventListener);
-    
-    return () => {
-      window.removeEventListener('update-profile-stats', handleStatsUpdate as EventListener);
-    };
   }, [session]); // Aggiungi session come dipendenza
+
+  // Aggiorna il profilo quando cambiano le statistiche
+  useEffect(() => {
+    if (stats && profile) {
+      setProfile({
+        ...profile,
+        stats
+      });
+    }
+  }, [stats]);
 
   const loadProfile = async () => {
     try {

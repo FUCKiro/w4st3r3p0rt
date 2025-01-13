@@ -12,6 +12,7 @@ function App() {
   const [session, setSession] = useState<any>(null);
   const [initialized, setInitialized] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [profileStats, setProfileStats] = useState<any>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -26,6 +27,18 @@ function App() {
     });
 
     return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const handleStatsUpdate = (event: CustomEvent<{ stats: any }>) => {
+      setProfileStats(event.detail.stats);
+    };
+    
+    window.addEventListener('update-profile-stats', handleStatsUpdate as EventListener);
+    
+    return () => {
+      window.removeEventListener('update-profile-stats', handleStatsUpdate as EventListener);
+    };
   }, []);
 
   if (!initialized) {
@@ -50,6 +63,7 @@ function App() {
                 isOpen={isProfileOpen} 
                 onClose={() => setIsProfileOpen(false)}
                 session={session}
+                stats={profileStats}
               />
             </>
           } />
