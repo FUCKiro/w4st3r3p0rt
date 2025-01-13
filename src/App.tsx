@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Map } from './components/Map';
 import { Profile } from './components/Profile';
-import { ResetPassword } from './components/ResetPassword';
+import { ResetPassword } from './components/ResetPassword'; 
 import { supabase } from './lib/supabase';
 import { TutorialOverlay } from './components/TutorialOverlay';
 import { OfflineIndicator } from './components/OfflineIndicator';
@@ -36,7 +36,8 @@ function App() {
     <BrowserRouter>
       <div className="relative h-screen">
         <Routes>
-          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/#/reset-password" element={<ResetPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} /> {/* Manteniamo anche il vecchio percorso per compatibilità */}
           <Route path="/" element={
             <>
               <TutorialOverlay />
