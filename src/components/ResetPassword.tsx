@@ -10,14 +10,14 @@ export function ResetPassword() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Estrai il token dall'URL
-    const hash = window.location.hash;
-    if (!hash) {
+    const fragment = window.location.hash;
+    if (!fragment) {
       navigate('/');
       return;
     }
 
-    const params = new URLSearchParams(hash.substring(1));
+    // Rimuovi il prefisso '#/' e ottieni i parametri
+    const params = new URLSearchParams(fragment.replace('#/', ''));
     const accessToken = params.get('access_token');
     const type = params.get('type');
     const refreshToken = params.get('refresh_token');
