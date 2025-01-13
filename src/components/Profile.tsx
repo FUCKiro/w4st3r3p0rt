@@ -484,8 +484,8 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
                           </div>
                         </div>
                         
-                        <div className="bg-white rounded-lg border border-gray-200 p-4">
-                          <h3 className="font-medium mb-3">Dettaglio per Tipo di Rifiuto</h3>
+                        <div className="bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 p-4">
+                          <h3 className="font-medium mb-3 text-gray-900 dark:text-white">Dettaglio per Tipo di Rifiuto</h3>
                           <div className="space-y-3">
                             {Object.entries(
                               profile.reports.reduce((acc, report) => {
@@ -498,10 +498,10 @@ export function Profile({ isOpen, onClose, session }: ProfileProps) {
                               }, {} as Record<number, number>)
                             ).map(([type, weight]) => (
                               <div key={type} className="flex justify-between items-center">
-                                <span className="text-gray-600">
+                                <span className="text-gray-600 dark:text-gray-300">
                                   {['Rifiuti Urbani', 'Rifiuti Ingombranti', 'Materiali Pericolosi', 'Discarica Abusiva', 'Rifiuti Verdi'][Number(type)]}
                                 </span>
-                                <span className="font-medium">{weight.toFixed(0)} kg</span>
+                                <span className="font-medium text-gray-900 dark:text-white">{weight.toFixed(0)} kg</span>
                               </div>
                             ))}
                           </div>
