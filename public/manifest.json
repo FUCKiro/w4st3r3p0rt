@@ -1,7 +1,7 @@
 {
-  "name": "Waste Monitor",
-  "short_name": "WasteMonitor",
-  "description": "Monitora e segnala i rifiuti abbandonati nella tua zona",
+  "name": "Trash Hunter",
+  "short_name": "TrashHunter",
+  "description": "Caccia ai rifiuti abbandonati nella tua zona",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

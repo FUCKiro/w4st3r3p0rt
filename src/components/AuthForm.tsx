@@ -174,7 +174,7 @@ export function AuthForm() {
     <div className="w-full space-y-6">
       <div className="text-center space-y-2">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-          Benvenuto su Waste Monitor
+          Benvenuto su Trash Hunter
         </h2>
         <p className="text-gray-600 dark:text-gray-300">
           Unisciti alla nostra comunità per rendere il mondo più pulito.
