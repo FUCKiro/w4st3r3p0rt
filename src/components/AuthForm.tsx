@@ -173,6 +173,11 @@ export function AuthForm() {
   return (
     <div className="w-full space-y-6">
       <div className="text-center space-y-2">
+        <img 
+          src="https://res.cloudinary.com/dlc5g3cjb/image/upload/v1736950956/trashhunter_logo_dy3bab.png"
+          alt="Trash Hunter Logo"
+          className="w-32 h-38 mx-auto mb-4"
+        />
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
           Benvenuto su Trash Hunter
         </h2>
