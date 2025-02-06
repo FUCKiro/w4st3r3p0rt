@@ -27,11 +27,14 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
 // Custom marker for user location
 const userLocationIcon = divIcon({
   className: 'custom-marker',
-  html: `<div style="background-color: #3B82F6; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+  html: `<div style="position: relative; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+          <div style="position: absolute; width: 40px; height: 40px; border-radius: 50%; background-color: #3B82F6; opacity: 0.2; animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;"></div>
+          <div style="background-color: #3B82F6; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); position: relative; z-index: 1;">
           <div style="background-color: #60A5FA; width: 12px; height: 12px; border-radius: 50%; animation: pulse 2s infinite;"></div>
+          </div>
          </div>`,
-  iconSize: [24, 24],
-  iconAnchor: [12, 12],
+  iconSize: [40, 40],
+  iconAnchor: [20, 20],
 });
 
 // Fix for default marker icon
@@ -446,16 +449,22 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
       <MapContainer
         center={[41.9028, 12.4964]} // Default center on Italy
         zoom={6}
-        className="w-full h-full relative"
+        className="w-full h-full relative map-container"
         maxBounds={[[-90, -180], [90, 180]]}
         minZoom={3}
         zoomControl={false}
+        attributionControl={false}
       >
         <MapClickHandler onMapClick={() => setShowReportForm(false)} />
         <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
+        
+        {/* Attribution con stile personalizzato */}
+        <div className="absolute bottom-4 right-4 z-[1000] bg-white bg-opacity-75 px-2 py-1 rounded text-xs text-gray-600">
+          © OpenStreetMap contributors
+        </div>
         <LocationMarker />
         <RecenterButton />
         {mapInitialized && userLocation && (
@@ -463,11 +472,12 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
             center={userLocation}
             radius={RADIUS}
             pathOptions={{
-              color: '#10B981',
-              fillColor: '#10B981',
-              fillOpacity: 0.1,
-              weight: 1,
-              dashArray: '5, 5'
+              color: '#059669',
+              fillColor: '#059669',
+              fillOpacity: 0.05,
+              weight: 2,
+              dashArray: '6, 8',
+              className: 'pulse-border'
             }}
           />
         )}

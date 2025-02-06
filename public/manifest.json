@@ -2,10 +2,30 @@
   "name": "Trash Hunter",
   "short_name": "TrashHunter",
   "description": "Caccia ai rifiuti abbandonati nella tua zona",
-  "start_url": "/",
   "display": "standalone",
+  "orientation": "portrait",
+  "start_url": "/",
   "background_color": "#ffffff",
   "theme_color": "#16a34a",
+  "prefer_related_applications": false,
+  "categories": ["utilities", "lifestyle"],
+  "shortcuts": [
+    {
+      "name": "Nuova Segnalazione",
+      "short_name": "Segnala",
+      "description": "Segnala un nuovo rifiuto",
+      "url": "/?action=report",
+      "icons": [{ "src": "/icons/report-96x96.png", "sizes": "96x96" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/map-540x720.jpg",
+      "type": "image/jpeg",
+      "sizes": "540x720",
+      "form_factor": "narrow"
+    }
+  ],
   "icons": [
     {
       "src": "/icons/icon-72x72.png",
