@@ -179,6 +179,19 @@ body {
   animation: fade-in 0.3s ease-out;
 }
 
+@keyframes pulse-scale {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.animate-pulse-scale {
+  animation: pulse-scale 2s ease-in-out infinite;
+}
+
 /* Custom marker styles */
 .custom-marker {
   display: flex;
