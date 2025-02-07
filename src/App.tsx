@@ -11,6 +11,7 @@ import { LoadingScreen } from './components/LoadingScreen';
 function App() {
   const [session, setSession] = useState<any>(null);
   const [initialized, setInitialized] = useState(false);
+  const [showLoading, setShowLoading] = useState(true);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [profileStats, setProfileStats] = useState<any>(null);
 
@@ -41,8 +42,8 @@ function App() {
     };
   }, []);
 
-  if (!initialized) {
-    return <LoadingScreen />;
+  if (!initialized || showLoading) {
+    return <LoadingScreen onLoadingComplete={() => setShowLoading(false)} />;
   }
   
   return (

@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 
-export function LoadingScreen() {
+interface LoadingScreenProps {
+  onLoadingComplete?: () => void;
+}
+
+export function LoadingScreen({ onLoadingComplete }: LoadingScreenProps) {
   const [fillLevel, setFillLevel] = useState(0);
   const [stats, setStats] = useState({
     reports: 0,
@@ -11,7 +15,7 @@ export function LoadingScreen() {
   useEffect(() => {
     // Animazione di riempimento
     const fillInterval = setInterval(() => {
-      setFillLevel(prev => {
+      setFillLevel((prev) => {
         if (prev >= 100) {
           clearInterval(fillInterval);
           return 100;
@@ -19,6 +23,13 @@ export function LoadingScreen() {
         return prev + 2;
       });
     }, 50);
+    
+    // Timer fisso di 2.5 secondi
+    const timer = setTimeout(() => {
+      if (onLoadingComplete) {
+        onLoadingComplete();
+      }
+    }, 2500);
 
     // Animazione delle statistiche
     const statsInterval = setInterval(() => {
@@ -32,6 +43,7 @@ export function LoadingScreen() {
     return () => {
       clearInterval(fillInterval);
       clearInterval(statsInterval);
+      clearTimeout(timer);
     };
   }, []);
 
