@@ -50,7 +50,7 @@ export function LoadingScreen({ onLoadingComplete }: LoadingScreenProps) {
   return (
     <div className="fixed inset-0 bg-gray-50 flex flex-col items-center justify-center p-4">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-green-600 mb-2">Waste Monitor</h1>
+        <h1 className="text-3xl font-bold text-green-600 mb-2">Trash Hunter</h1>
         <p className="text-gray-600">Caricamento in corso...</p>
       </div>
 

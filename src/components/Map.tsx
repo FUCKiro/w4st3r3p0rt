@@ -6,6 +6,7 @@ import { supabase } from '../lib/supabase';
 import type { WasteReport } from '../lib/supabase';
 import { User, Session } from '@supabase/supabase-js';
 import { XPPopup } from './XPPopup';
+import { TipsCarousel } from './TipsCarousel';
 import { icon, divIcon, LeafletEvent, LeafletMouseEvent, LocationEvent } from 'leaflet';
 
 // Function to calculate distance between two points in meters
@@ -672,6 +673,7 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
           onClose={() => setXpEarned(null)}
         />
       )}
+      <TipsCarousel />
     </div>
   );
 }
