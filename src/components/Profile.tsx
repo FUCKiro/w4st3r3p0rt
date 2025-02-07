@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase';
 import { AuthForm } from './AuthForm';
 import type { UserStats, WasteReport } from '../lib/supabase';
 import { BADGES, WASTE_IMPACT, SIZE_MULTIPLIER } from '../lib/supabase';
-import { Moon, Sun } from 'lucide-react';
+import { Moon, Sun, BarChart2, ScrollText, Leaf } from 'lucide-react';
 
 interface UserProfile {
   username: string;
@@ -25,10 +25,8 @@ export function Profile({ isOpen, onClose, session, stats }: ProfileProps) {
   const [editing, setEditing] = useState(false);
   const [username, setUsername] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'stats' | 'reports' | 'impact'>('stats');
+  const [activeTab, setActiveTab] = useState<'stats' | 'reports' | 'impact' | 'achievements'>('stats');
   const [isDark, setIsDark] = useState(false);
-  const [showPasswordForm, setShowPasswordForm] = useState(false);
-  const [newPassword, setNewPassword] = useState('');
 
   useEffect(() => {
     // Controlla il tema salvato o la preferenza del sistema
@@ -298,36 +296,42 @@ export function Profile({ isOpen, onClose, session, stats }: ProfileProps) {
                 </div>
 
                 {/* Tabs */}
-                <div className="flex border-b border-gray-200 mb-6">
+                <div className="grid grid-cols-4 gap-x-1 gap-y-2 border-b border-gray-200 mb-6 pb-2">
                   <button
                     onClick={() => setActiveTab('stats')}
-                    className={`flex-1 py-3 text-sm font-medium border-b-2 ${
+                    className={`flex-1 py-3 text-sm font-medium border-b-2 flex flex-col items-center ${
                       activeTab === 'stats'
-                        ? 'border-green-600 text-green-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700'
+                        ? 'border-green-600 text-green-600 dark:text-green-400'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
                     }`}
+                    title="Statistiche"
+                    aria-label="Statistiche"
                   >
-                    Statistiche
+                    <BarChart2 className="w-5 h-5" />
                   </button>
                   <button
                     onClick={() => setActiveTab('reports')}
-                    className={`flex-1 py-3 text-sm font-medium border-b-2 ${
+                    className={`flex-1 py-3 text-sm font-medium border-b-2 flex flex-col items-center ${
                       activeTab === 'reports'
-                        ? 'border-green-600 text-green-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700'
+                        ? 'border-green-600 text-green-600 dark:text-green-400'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
                     }`}
+                    title="Le Mie Segnalazioni"
+                    aria-label="Le Mie Segnalazioni"
                   >
-                    Le Mie Segnalazioni
+                    <ScrollText className="w-5 h-5" />
                   </button>
                   <button
                     onClick={() => setActiveTab('impact')}
-                    className={`flex-1 py-3 text-sm font-medium border-b-2 ${
+                    className={`flex-1 py-3 text-sm font-medium border-b-2 flex flex-col items-center ${
                       activeTab === 'impact'
-                        ? 'border-green-600 text-green-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700'
+                        ? 'border-green-600 text-green-600 dark:text-green-400'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
                     }`}
+                    title="Impatto Ambientale"
+                    aria-label="Impatto Ambientale"
                   >
-                    Impatto Ambientale
+                    <Leaf className="w-5 h-5" />
                   </button>
                 </div>
 
@@ -528,143 +532,59 @@ export function Profile({ isOpen, onClose, session, stats }: ProfileProps) {
                         Nessun dato sull'impatto ambientale disponibile
                       </div>
                     )}
+                  </div>                  
+                ) : activeTab === 'achievements' ? (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                        Obiettivi
+                      </h3>
+                    </div>
+
+                    <div className="grid gap-3">
+                      {Object.values(BADGES).map((badge) => (
+                        <div
+                          key={badge.id}
+                          className={`p-3 rounded-lg border transition-all ${
+                            profile?.stats?.badges?.includes(badge.id)
+                              ? 'bg-green-50 dark:bg-green-900/50 border-green-200 dark:border-green-800'
+                              : 'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 opacity-75'
+                          }`}
+                        >
+                          <div className="flex items-start space-x-3">
+                            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-white dark:bg-gray-700 flex items-center justify-center shadow-sm">
+                              <span className="text-xl">{badge.icon}</span>
+                            </div>
+                            
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between">
+                                <h4 className="font-medium text-gray-900 dark:text-white truncate">
+                                  {badge.name}
+                                </h4>
+                              </div>
+                              
+                              <p className="text-sm text-gray-600 dark:text-gray-300 mt-0.5">
+                                {badge.description}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 ) : null}
                 <div className="pt-6 border-t">
                   <button
-                    onClick={() => setShowPasswordForm(true)}
-                    className="w-full px-4 py-2 mb-4 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
-                  >
-                    Cambia Password
-                  </button>
-                  <button
                     onClick={handleLogout}
-                    className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                    className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors dark:bg-red-700 dark:hover:bg-red-800"
                   >
                     Esci
                   </button>
                 </div>
-
-                {/* Form cambio password */}
-                {showPasswordForm && (
-                  <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-sm w-full">
-                      <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-                        Cambia Password
-                      </h3>
-                      <form onSubmit={async (e) => {
-                        e.preventDefault();
-                        try {
-                          // Validazione password
-                          if (newPassword.length < 8 || 
-                              !/[A-Z]/.test(newPassword) || 
-                              !/[a-z]/.test(newPassword) || 
-                              !/[0-9]/.test(newPassword) || 
-                              !/[!@#$%^&*]/.test(newPassword)) {
-                            setError('La password non soddisfa i requisiti minimi di sicurezza');
-                            return;
-                          }
-
-                          const { error } = await supabase.auth.updateUser({
-                            password: newPassword
-                          });
-
-                          if (error) throw error;
-
-                          alert('Password aggiornata con successo!');
-                          setShowPasswordForm(false);
-                          setNewPassword('');
-                          setError(null);
-                        } catch (err) {
-                          setError((err as Error).message);
-                        }
-                      }}>
-                        <div className="mb-4">
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Nuova Password
-                          </label>
-                          <input
-                            type="password"
-                            value={newPassword}
-                            onChange={(e) => setNewPassword(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:text-white"
-                            required
-                          />
-                          {/* Password requirements */}
-                          <div className="mt-2 text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                            <p>La password deve contenere:</p>
-                            <ul className="list-disc pl-5 space-y-1">
-                              <li className={`${newPassword.length >= 8 ? 'text-green-600 dark:text-green-400' : ''}`}>
-                                Almeno 8 caratteri
-                              </li>
-                              <li className={`${/[A-Z]/.test(newPassword) ? 'text-green-600 dark:text-green-400' : ''}`}>
-                                Almeno una lettera maiuscola
-                              </li>
-                              <li className={`${/[a-z]/.test(newPassword) ? 'text-green-600 dark:text-green-400' : ''}`}>
-                                Almeno una lettera minuscola
-                              </li>
-                              <li className={`${/[0-9]/.test(newPassword) ? 'text-green-600 dark:text-green-400' : ''}`}>
-                                Almeno un numero
-                              </li>
-                              <li className={`${/[!@#$%^&*]/.test(newPassword) ? 'text-green-600 dark:text-green-400' : ''}`}>
-                                Almeno un carattere speciale (!@#$%^&*)
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                        {error && (
-                          <p className="text-red-600 dark:text-red-400 text-sm mb-4">{error}</p>
-                        )}
-                        <div className="flex space-x-3">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setShowPasswordForm(false);
-                              setNewPassword('');
-                              setError(null);
-                            }}
-                            className="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white rounded-md hover:bg-gray-300 dark:hover:bg-gray-500"
-                          >
-                            Annulla
-                          </button>
-                          <button
-                            type="submit"
-                            className="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-                          >
-                            Aggiorna
-                          </button>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-                )}
-              </div>
-              <div className="mt-8 pt-6 border-t text-center text-sm text-gray-500 dark:text-gray-400">
-                Ideato e Sviluppato da Fabio La Rocca
-                <button
-                  onClick={() => window.alert('Trash Hunter v1.0\n\nQuesta applicazione è stata creata per aiutare i cittadini a segnalare e monitorare i rifiuti abbandonati nella propria zona.\n\nTutti i diritti riservati © 2025\nIdeato e Sviluppato da Fabio La Rocca\nhttps://fabiolarocca.dev/')}
-                  className="ml-2 p-1 text-green-600 hover:text-green-700 rounded-full hover:bg-green-50 transition-colors"
-                  title="Informazioni sull'app"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="w-4 h-4"
-                  >
-                    <circle cx="12" cy="12" r="10" />
-                    <line x1="12" y1="16" x2="12" y2="12" />
-                    <line x1="12" y1="8" x2="12.01" y2="8" />
-                  </svg>
-                </button>
               </div>
             </>
           )}
-        </div>
+          </div>
         </div>
       </div>
     </>
