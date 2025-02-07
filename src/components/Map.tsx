@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents, Circle as
 import 'leaflet/dist/leaflet.css';
 import { Trash2, Sofa, AlertTriangle, Trash, Leaf, Package, Car, Truck, Building, Crosshair, UserCircle2, PlusCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { amaPoints } from '../lib/ama-points';
 import type { WasteReport } from '../lib/supabase';
 import { User, Session } from '@supabase/supabase-js';
 import { XPPopup } from './XPPopup';
@@ -73,6 +74,16 @@ const getWasteIcon = (type: number) => {
     iconAnchor: [16, 16],
   });
 };
+// Icona personalizzata per i centri di raccolta AMA
+const amaIcon = divIcon({
+  className: 'custom-marker',
+  html: `<div style="background-color: #16a34a; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+          <span style="font-size: 18px;">♻️</span>
+         </div>`,
+  iconSize: [36, 36],
+  iconAnchor: [18, 18],
+});
+
 function LocationMarker() {
   const [position, setPosition] = useState<[number, number] | null>(null);
   const map = useMap();
@@ -551,6 +562,36 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
                       </button>
                     </div>
                   )}
+                </div>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+        
+        {/* Centri di raccolta AMA */}
+        {amaPoints.map((point) => (
+          <Marker
+            key={point.name}
+            position={[point.latitude, point.longitude]}
+            icon={amaIcon}
+          >
+            <Popup>
+              <div className="p-3">
+                <h3 className="font-bold text-lg text-green-600 mb-2">{point.name}</h3>
+                <div className="space-y-2">
+                  <p className="flex items-start">
+                    <span className="font-medium mr-1">Indirizzo:</span>
+                    <span className="text-gray-600">{point.address}</span>
+                  </p>
+                  <p className="flex items-start">
+                    <span className="font-medium mr-1">Orari:</span>
+                    <span className="text-gray-600">{point.hours}</span>
+                  </p>
+                  <div className="mt-2 pt-2 border-t border-gray-200">
+                    <p className="text-sm text-gray-500">
+                      Centro di Raccolta AMA Roma
+                    </p>
+                  </div>
                 </div>
               </div>
             </Popup>
