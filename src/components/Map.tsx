@@ -578,15 +578,29 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
             <Popup>
               <div className="p-3">
                 <h3 className="font-bold text-lg text-green-600 mb-2">{point.name}</h3>
-                <div className="space-y-2">
+                <div className="space-y-1">
+                  <p className="text-sm text-gray-500 font-medium">
+                    Municipio {point.municipio}
+                  </p>
                   <p className="flex items-start">
                     <span className="font-medium mr-1">Indirizzo:</span>
                     <span className="text-gray-600">{point.address}</span>
                   </p>
+                  {point.metro && (
+                    <p className="text-sm text-blue-600">
+                      <span className="mr-1">🚇</span>
+                      {point.metro}
+                    </p>
+                  )}
                   <p className="flex items-start">
                     <span className="font-medium mr-1">Orari:</span>
-                    <span className="text-gray-600">{point.hours}</span>
+                    <span className="text-gray-600 whitespace-pre-line">{point.hours}</span>
                   </p>
+                  {point.notes && (
+                    <p className="text-sm text-red-600 mt-2 font-medium">
+                      {point.notes}
+                    </p>
+                  )}
                   <div className="mt-2 pt-2 border-t border-gray-200">
                     <p className="text-sm text-gray-500">
                       Centro di Raccolta AMA Roma
