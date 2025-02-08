@@ -3,7 +3,8 @@ import { supabase } from '../lib/supabase';
 import { AuthForm } from './AuthForm';
 import type { UserStats, WasteReport } from '../lib/supabase';
 import { BADGES, WASTE_IMPACT, SIZE_MULTIPLIER } from '../lib/supabase';
-import { Moon, Sun, BarChart2, ScrollText, Leaf } from 'lucide-react';
+import { Moon, Sun, BarChart2, ScrollText, Leaf, Info } from 'lucide-react';
+import { InfoDialog } from './InfoDialog';
 
 interface UserProfile {
   username: string;
@@ -27,6 +28,7 @@ export function Profile({ isOpen, onClose, session, stats }: ProfileProps) {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'stats' | 'reports' | 'impact' | 'achievements'>('stats');
   const [isDark, setIsDark] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
 
   useEffect(() => {
     // Controlla il tema salvato o la preferenza del sistema
@@ -573,6 +575,15 @@ export function Profile({ isOpen, onClose, session, stats }: ProfileProps) {
                     </div>
                   </div>
                 ) : null}
+                <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700 flex justify-center">
+                  <button
+                    onClick={() => setShowInfo(true)}
+                    className="flex items-center space-x-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                  >
+                    <Info className="w-5 h-5" />
+                    <span>Ideato e Sviluppato da Fabio La Rocca. © 2025 Tutti i diritti riservati.</span>
+                  </button>
+                </div>
                 <div className="pt-6 border-t">
                   <button
                     onClick={handleLogout}
@@ -586,6 +597,7 @@ export function Profile({ isOpen, onClose, session, stats }: ProfileProps) {
           )}
           </div>
         </div>
+        <InfoDialog isOpen={showInfo} onClose={() => setShowInfo(false)} />
       </div>
     </>
   );
