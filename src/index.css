@@ -79,6 +79,7 @@ input, textarea {
   touch-action: none;
   position: fixed;
   inset: 0;
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* Optimize for mobile devices */
@@ -87,7 +88,8 @@ input, textarea {
     max-height: 90vh;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    padding: 1rem 1rem calc(1rem + env(safe-area-inset-bottom));
+    padding: 1rem;
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
   }
 
   .waste-type-grid {
@@ -103,11 +105,11 @@ input, textarea {
   .mobile-button {
     min-height: 44px;
     padding: 0.75rem !important;
-    margin-bottom: env(safe-area-inset-bottom) !important;
+    margin-bottom: calc(env(safe-area-inset-bottom) + 0.5rem) !important;
   }
 
   .leaflet-control-zoom {
-    margin-bottom: calc(80px + env(safe-area-inset-bottom)) !important;
+    margin-bottom: calc(100px + env(safe-area-inset-bottom)) !important;
   }
   
   .leaflet-control-attribution {
@@ -115,13 +117,14 @@ input, textarea {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    margin-bottom: env(safe-area-inset-bottom) !important;
   }
 }
 
 /* Adjust recenter button position on mobile */
 @media (max-width: 640px) {
   .bottom-24 {
-    bottom: 7rem;
+    bottom: calc(7rem + env(safe-area-inset-bottom));
   }
 }
 
