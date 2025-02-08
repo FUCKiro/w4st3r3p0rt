@@ -31,8 +31,7 @@
 html, body, #root {
   height: 100%;
   width: 100%;
-  position: fixed;
-  inset: 0;
+  position: relative;
   margin: 0;
   padding: 0;
   overflow: hidden;
@@ -45,12 +44,17 @@ html, body, #root {
 /* Prevent iOS Safari elastic scroll */
 body {
   position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   width: 100%;
   height: 100%;
   overscroll-behavior: none;
   -webkit-overflow-scrolling: touch;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
 /* Ensure proper touch handling */
@@ -78,8 +82,11 @@ input, textarea {
   width: 100vw !important;
   touch-action: none;
   position: fixed;
-  inset: 0;
-  padding-bottom: env(safe-area-inset-bottom);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
 /* Optimize for mobile devices */
@@ -105,11 +112,12 @@ input, textarea {
   .mobile-button {
     min-height: 44px;
     padding: 0.75rem !important;
-    margin-bottom: calc(env(safe-area-inset-bottom) + 0.5rem) !important;
+    margin-bottom: env(safe-area-inset-bottom) !important;
   }
 
   .leaflet-control-zoom {
-    margin-bottom: calc(100px + env(safe-area-inset-bottom)) !important;
+    margin-bottom: calc(80px + env(safe-area-inset-bottom)) !important;
+    margin-right: calc(env(safe-area-inset-right) + 1rem) !important;
   }
   
   .leaflet-control-attribution {
@@ -124,7 +132,8 @@ input, textarea {
 /* Adjust recenter button position on mobile */
 @media (max-width: 640px) {
   .bottom-24 {
-    bottom: calc(7rem + env(safe-area-inset-bottom));
+    bottom: calc(6rem + env(safe-area-inset-bottom));
+    right: calc(env(safe-area-inset-right) + 1rem);
   }
 }
 
