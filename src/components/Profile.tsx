@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase';
 import { AuthForm } from './AuthForm';
 import type { UserStats, WasteReport } from '../lib/supabase';
 import { BADGES, WASTE_IMPACT, SIZE_MULTIPLIER } from '../lib/supabase';
-import { Moon, Sun, BarChart2, ScrollText, Leaf, Info } from 'lucide-react';
+import { Moon, Sun, BarChart2, ScrollText, Leaf, Info, Trophy } from 'lucide-react';
 import { InfoDialog } from './InfoDialog';
 
 interface UserProfile {
@@ -335,6 +335,18 @@ export function Profile({ isOpen, onClose, session, stats }: ProfileProps) {
                   >
                     <Leaf className="w-5 h-5" />
                   </button>
+                  <button
+                    onClick={() => setActiveTab('achievements')}
+                    className={`flex-1 py-3 text-sm font-medium border-b-2 flex flex-col items-center ${
+                      activeTab === 'achievements'
+                        ? 'border-green-600 text-green-600 dark:text-green-400'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                    }`}
+                    title="Obiettivi"
+                    aria-label="Obiettivi"
+                  >
+                    <Trophy className="w-5 h-5" />
+                  </button>
                 </div>
 
                 {activeTab === 'stats' ? (
@@ -538,9 +550,14 @@ export function Profile({ isOpen, onClose, session, stats }: ProfileProps) {
                 ) : activeTab === 'achievements' ? (
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-                        Obiettivi
-                      </h3>
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                          Obiettivi
+                        </h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          {profile?.stats?.badges?.length || 0} di {Object.keys(BADGES).length} sbloccati
+                        </p>
+                      </div>
                     </div>
 
                     <div className="grid gap-3">
@@ -578,10 +595,10 @@ export function Profile({ isOpen, onClose, session, stats }: ProfileProps) {
                 <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700 flex justify-center">
                   <button
                     onClick={() => setShowInfo(true)}
-                    className="flex items-center space-x-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                    className="flex items-center space-x-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-xs"
                   >
                     <Info className="w-5 h-5" />
-                    <span>Ideato e Sviluppato da Fabio La Rocca. © 2025 Tutti i diritti riservati.</span>
+                    <span>Ideato e Sviluppato da Fabio La Rocca. ©2025 Tutti i diritti riservati.</span>
                   </button>
                 </div>
                 <div className="pt-6 border-t">
