@@ -414,10 +414,16 @@ export function Profile({ isOpen, onClose, session, stats }: ProfileProps) {
 
                         {profile?.stats?.badges && profile.stats.badges.length > 0 && (
                           <div>
-                            <h3 className="text-sm font-medium text-gray-700 mb-2">Badge Ottenuti</h3>
+                            <div className="flex items-center justify-between mb-2">
+                              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Ultimi Badge Ottenuti</h3>
+                              <span className="text-xs text-gray-500 dark:text-gray-400">
+                                {profile.stats.badges.length} totali
+                              </span>
+                            </div>
                             <div className="grid grid-cols-1 gap-3">
-                              {Object.values(BADGES).map(badge => (
-                                profile.stats?.badges.includes(badge.id) && (
+                              {profile.stats.badges.slice(-5).reverse().map(badgeId => {
+                                const badge = Object.values(BADGES).find(b => b.id === badgeId);
+                                return badge && (
                                   <div
                                     key={badge.id}
                                     className="flex items-center p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
@@ -428,8 +434,8 @@ export function Profile({ isOpen, onClose, session, stats }: ProfileProps) {
                                       <div className="text-sm text-gray-600 dark:text-gray-400">{badge.description}</div>
                                     </div>
                                   </div>
-                                )
-                              ))}
+                                );
+                              })}
                             </div>
                           </div>
                         )}
