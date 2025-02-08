@@ -41,6 +41,13 @@ html, body, #root {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Safe area padding for profile panel */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .fixed.inset-y-0 > div > div {
+    padding-top: calc(env(safe-area-inset-top) + 3rem);
+  }
+}
+
 /* Prevent iOS Safari elastic scroll */
 body {
   position: fixed;

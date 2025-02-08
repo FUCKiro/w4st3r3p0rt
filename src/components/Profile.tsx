@@ -186,7 +186,7 @@ export function Profile({ isOpen, onClose, session, stats }: ProfileProps) {
         }`}
       >
         <div className="h-full overflow-y-auto overscroll-contain">
-          <div className="p-6">
+          <div className="p-6 pt-12 sm:pt-6">
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center">
               <div className="relative">
