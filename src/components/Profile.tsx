@@ -553,7 +553,7 @@ export function Profile({ isOpen, onClose, session, stats }: ProfileProps) {
                         >
                           <div className="flex items-start space-x-3">
                             <div className="flex-shrink-0 w-10 h-10 rounded-full bg-white dark:bg-gray-700 flex items-center justify-center shadow-sm">
-                              <span className="text-xl">{badge.icon}</span>
+                              <span className="text-xl">{badge.icon || '🏆'}</span>
                             </div>
                             
                             <div className="flex-1 min-w-0">

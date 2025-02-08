@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { HashRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Map } from './components/Map';
 import { Profile } from './components/Profile';
 import { ResetPassword } from './components/ResetPassword'; 
@@ -47,7 +47,7 @@ function App() {
   }
   
   return (
-    <HashRouter>
+    <BrowserRouter>
       <div className="relative h-screen">
         <Routes>
           <Route path="/reset-password" element={<ResetPassword />} />
@@ -70,7 +70,7 @@ function App() {
           } />
         </Routes>
       </div>
-    </HashRouter>
+    </BrowserRouter>
   );
 }
 
