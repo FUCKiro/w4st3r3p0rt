@@ -646,10 +646,10 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
               e.stopPropagation();
             }}
           >
-            <h3 className="text-lg font-bold mb-4 text-gray-900 dark:text-white">Segnala Rifiuti</h3>
+            <h3 className="text-base font-bold mb-3 text-gray-900 dark:text-white">Segnala Rifiuti</h3>
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                   Tipo di Rifiuto
                 </label>
                 <div className="grid grid-cols-5 gap-2 waste-type-grid">
@@ -665,7 +665,7 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
                             : 'border-gray-200 dark:border-gray-600 hover:border-green-200 dark:hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900 text-gray-700 dark:text-gray-300'
                         }`}
                       >
-                        <IconComponent className="w-6 h-6 mb-1 text-current" />
+                        <IconComponent className="w-5 h-5 mb-0.5" />
                         <span className="text-xs text-center">{type}</span>
                       </button>
                     );
@@ -674,7 +674,7 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                   Dimensione
                 </label>
                 <div className="grid grid-cols-4 gap-2 waste-size-grid">
@@ -690,7 +690,7 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
                             : 'border-gray-200 dark:border-gray-600 hover:border-green-200 dark:hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900 text-gray-700 dark:text-gray-300'
                         }`}
                       >
-                        <IconComponent className="w-6 h-6 mb-1 text-current" />
+                        <IconComponent className="w-5 h-5 mb-0.5" />
                         <span className="text-xs text-center">{size}</span>
                       </button>
                     );
@@ -703,12 +703,12 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Note aggiuntive..."
-                  className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
-                  rows={3}
+                  className="w-full p-1.5 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 text-sm"
+                  rows={2}
                 />
               )}
 
-              <div className="flex space-x-2 pt-2">
+              <div className="flex space-x-2">
                 <button
                   onClick={() => setShowReportForm(false)}
                   className="flex-1 bg-gray-500 dark:bg-gray-600 text-white px-4 py-2 rounded mobile-button hover:bg-gray-600 dark:hover:bg-gray-700 transition-colors"

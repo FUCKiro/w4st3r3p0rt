@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { AuthForm } from './AuthForm';
 import type { UserStats, WasteReport } from '../lib/supabase';
-import { BADGES, WASTE_IMPACT, SIZE_MULTIPLIER } from '../lib/supabase';
+import { BADGES, WASTE_IMPACT, SIZE_MULTIPLIER, getUserTitle, TITLES } from '../lib/supabase';
 import { Moon, Sun, BarChart2, ScrollText, Leaf, Info, Trophy } from 'lucide-react';
 import { InfoDialog } from './InfoDialog';
 
@@ -193,18 +193,25 @@ export function Profile({ isOpen, onClose, session, stats }: ProfileProps) {
                 <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center text-green-600 dark:text-green-400 text-2xl font-bold border-2 border-green-200 dark:border-green-700">
                   {profile?.username ? profile.username.charAt(0).toUpperCase() : '👤'}
                 </div>
-                {profile?.stats?.level && (
+                {profile?.stats?.level ? (
                   <div className="absolute -bottom-2 -right-2 bg-green-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center border-2 border-white">
                     {profile.stats.level}
                   </div>
-                )}
+                ) : null}
               </div>
               <div className="ml-4">
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
                   {session ? (profile?.username || 'Il tuo profilo') : 'Accedi'}
                 </h1>
                 {profile && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400">{profile.email}</p>
+                  <>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{profile.email}</p>
+                    {profile.stats?.level && (
+                      <p className="text-sm font-medium text-green-600 dark:text-green-400">
+                        {getUserTitle(profile.stats.level)}
+                      </p>
+                    )}
+                  </>
                 )}
               </div>
             </div>
@@ -358,7 +365,12 @@ export function Profile({ isOpen, onClose, session, stats }: ProfileProps) {
                       <div className="space-y-4">
                         <div className="bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 p-4">
                           <div className="flex justify-between items-center mb-2">
-                            <span className="text-sm text-gray-600 dark:text-gray-400">Livello {profile?.stats?.level || 1}</span>
+                            <div>
+                              <span className="text-sm text-gray-600 dark:text-gray-400">Livello {profile?.stats?.level || 1}</span>
+                              <p className="text-xs text-green-600 dark:text-green-400 mt-0.5">
+                                {getUserTitle(profile?.stats?.level || 1)}
+                              </p>
+                            </div>
                             <span className="text-sm text-gray-600 dark:text-gray-400">{profile?.stats?.xp || 0} XP</span>
                           </div>
                           <div className="w-full bg-gray-200 rounded-full h-2">
@@ -369,6 +381,16 @@ export function Profile({ isOpen, onClose, session, stats }: ProfileProps) {
                               }}
                             />
                           </div>
+                          {profile?.stats?.level && profile.stats.level < 50 && (
+                            <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                              Prossimo titolo: {getUserTitle(profile.stats.level + 1)} al livello {
+                                Object.keys(TITLES || {})
+                                  .map(Number)
+                                  .sort((a, b) => a - b)
+                                  .find(level => level > profile.stats!.level)
+                              }
+                            </div>
+                          )}
                         </div>
                         
                         <div className="grid grid-cols-2 gap-4">

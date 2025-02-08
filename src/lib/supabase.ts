@@ -82,6 +82,38 @@ export const WASTE_IMPACT = {
   }
 };
 
+// Titoli basati sul livello
+const TITLES = {
+  1: 'Novizio Ambientale',
+  2: 'Guardiano Verde',
+  3: 'Sentinella Ecologica',
+  4: 'Protettore Ambientale',
+  5: 'Custode della Terra',
+  6: 'Difensore della Natura',
+  7: 'Campione Ecologico',
+  8: 'Maestro Ambientale',
+  9: 'Saggio della Terra',
+  10: 'Leggenda Verde',
+  15: 'Eroe Ambientale',
+  20: 'Guardiano Supremo',
+  25: 'Custode Ancestrale',
+  30: 'Spirito della Terra',
+  40: 'Guardiano Eterno',
+  50: 'Leggenda Vivente'
+};
+
+export { TITLES };
+
+// Funzione per ottenere il titolo in base al livello
+export function getUserTitle(level: number): string {
+  const levels = Object.keys(TITLES).map(Number).sort((a, b) => b - a);
+  for (const threshold of levels) {
+    if (level >= threshold) {
+      return TITLES[threshold as keyof typeof TITLES];
+    }
+  }
+  return TITLES[1];
+}
 // Coefficienti per dimensione
 export const SIZE_MULTIPLIER = {
   0: 0.5,  // Piccolo
