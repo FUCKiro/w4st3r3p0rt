@@ -6,7 +6,6 @@
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -28,42 +27,19 @@
   filter: invert(100%) hue-rotate(180deg);
 }
 
-/* Offline storage indicator */
-.offline-badge {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: .5;
-  }
-}
-
-@keyframes pulse-ring {
-  0% {
-    transform: scale(0.8);
-    opacity: 0.2;
-  }
-  50% {
-    transform: scale(1);
-    opacity: 0.4;
-  }
-  100% {
-    transform: scale(0.8);
-    opacity: 0.2;
-  }
-}
-
 /* Ensure full viewport height usage */
 html, body, #root {
   height: 100%;
   width: 100%;
+  position: fixed;
+  inset: 0;
   margin: 0;
   padding: 0;
   overflow: hidden;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Prevent iOS Safari elastic scroll */
@@ -71,64 +47,21 @@ body {
   position: fixed;
   width: 100%;
   height: 100%;
-  overscroll-behavior-y: contain;
+  overscroll-behavior: none;
   -webkit-overflow-scrolling: touch;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
 }
 
-/* Improve touch interactions */
+/* Ensure proper touch handling */
 .touch-manipulation {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-}
-
-/* Prevent pull-to-refresh */
-body {
-  overscroll-behavior-y: contain;
+  cursor: pointer;
 }
 
 /* Prevent text selection */
 * {
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-input, textarea {
-  -webkit-user-select: text;
-  user-select: text;
-}
-
-/* Improve touch interactions */
-.touch-manipulation {
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-  cursor: pointer;
-}
-
-/* Prevent text selection during touch */
-.no-select {
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-/* Allow text selection in inputs */
-input, textarea {
-  -webkit-user-select: text;
-  user-select: text;
-}
-
-/* Improve touch interactions */
-.touch-manipulation {
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-  cursor: pointer;
-}
-
-/* Prevent text selection during touch */
-.no-select {
   -webkit-user-select: none;
   user-select: none;
 }
@@ -144,12 +77,12 @@ input, textarea {
   height: 100vh !important;
   width: 100vw !important;
   touch-action: none;
-  touch-action: none;
+  position: fixed;
+  inset: 0;
 }
 
 /* Optimize for mobile devices */
 @media (max-width: 640px) {
-  /* Report form panel adjustments */
   .report-form-panel {
     max-height: 90vh;
     overflow-y: auto;
@@ -157,7 +90,6 @@ input, textarea {
     padding: 1rem 1rem calc(1rem + env(safe-area-inset-bottom));
   }
 
-  /* Adjust grid layouts for better mobile display */
   .waste-type-grid {
     grid-template-columns: repeat(3, 1fr);
     gap: 0.5rem;
@@ -168,7 +100,6 @@ input, textarea {
     gap: 0.5rem;
   }
 
-  /* Make buttons more tappable on mobile */
   .mobile-button {
     min-height: 44px;
     padding: 0.75rem !important;
@@ -177,27 +108,6 @@ input, textarea {
 
   .leaflet-control-zoom {
     margin-bottom: calc(80px + env(safe-area-inset-bottom)) !important;
-  }
-  
-  .leaflet-control-attribution {
-    max-width: 200px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  /* Adjust bottom panel for mobile */
-  .report-form-panel {
-    max-height: 80vh;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-}
-
-/* Mobile optimizations */
-@media (max-width: 640px) {
-  .leaflet-control-zoom {
-    margin-bottom: 100px !important;
   }
   
   .leaflet-control-attribution {
@@ -215,6 +125,7 @@ input, textarea {
   }
 }
 
+/* Animations */
 @keyframes pulse {
   0% {
     transform: scale(0.8);
@@ -258,7 +169,7 @@ input, textarea {
   animation: pulse-scale 2s ease-in-out infinite;
 }
 
-/* Custom marker styles */
+/* Map styles */
 .custom-marker {
   display: flex;
   align-items: center;
@@ -266,8 +177,11 @@ input, textarea {
 }
 
 .leaflet-popup-content-wrapper {
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(229, 231, 235, 0.5);
+  backdrop-filter: blur(8px);
+  background-color: rgba(255, 255, 255, 0.95);
 }
 
 .leaflet-popup-content {
@@ -275,12 +189,23 @@ input, textarea {
   min-width: 200px;
 }
 
-/* Stile personalizzato per la mappa */
-.map-container {
-  background-color: #f8fafc;
+.leaflet-popup-tip {
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
 }
 
-/* Animazione del bordo dell'area di monitoraggio */
+/* Map animations */
+.leaflet-fade-anim .leaflet-tile,
+.leaflet-zoom-anim .leaflet-zoom-animated {
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.custom-marker:hover {
+  transform: scale(1.1);
+  transition: transform 0.2s ease-in-out;
+}
+
+/* Pulse border animation */
 .pulse-border {
   animation: pulse-border 2s infinite;
 }
@@ -295,29 +220,4 @@ input, textarea {
   100% {
     stroke-opacity: 0.4;
   }
-}
-
-/* Stile personalizzato per i popup */
-.leaflet-popup-content-wrapper {
-  border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  border: 1px solid rgba(229, 231, 235, 0.5);
-  backdrop-filter: blur(8px);
-  background-color: rgba(255, 255, 255, 0.95);
-}
-
-.leaflet-popup-tip {
-  background-color: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
-}
-
-/* Animazione smooth per lo zoom */
-.leaflet-fade-anim .leaflet-tile,.leaflet-zoom-anim .leaflet-zoom-animated {
-  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Stile per i marker quando sono hover */
-.custom-marker:hover {
-  transform: scale(1.1);
-  transition: transform 0.2s ease-in-out;
 }
