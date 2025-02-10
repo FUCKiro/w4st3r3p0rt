@@ -10,19 +10,14 @@ export function ResetPassword() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fragment = window.location.hash;
-    if (!fragment) {
-      navigate('/');
-      return;
-    }
-
-    // Rimuovi il prefisso '#/' e ottieni i parametri
-    const params = new URLSearchParams(fragment.replace('#/', ''));
+    // Ottieni i parametri dall'URL
+    const params = new URLSearchParams(window.location.hash.replace('#/reset-password?', ''));
     const accessToken = params.get('access_token');
-    const type = params.get('type');
     const refreshToken = params.get('refresh_token');
+    const type = params.get('type');
 
     if (!accessToken || type !== 'recovery') {
+      console.error('Invalid or missing reset password parameters');
       navigate('/');
       return;
     }
@@ -32,13 +27,17 @@ export function ResetPassword() {
       try {
         const { error } = await supabase.auth.setSession({
           access_token: accessToken,
-          refresh_token: refreshToken || ''
+          refresh_token: refreshToken || '',
         });
         
         if (error) {
           console.error('Error setting session:', error);
           navigate('/');
+          return;
         }
+
+        // Se tutto ok, mostra il form di reset
+        setLoading(false);
       } catch (err) {
         console.error('Error setting session:', err);
         navigate('/');
@@ -70,15 +69,13 @@ export function ResetPassword() {
       if (error) throw error;
 
       setSuccess(true);
-      
-      // Mostra un messaggio di successo
-      alert('Password aggiornata con successo! Verrai reindirizzato alla pagina di login.');
-      
+            
       // Effettua il logout
       await supabase.auth.signOut();
       
       // Reindirizza dopo un breve delay
       setTimeout(() => {
+        alert('Password aggiornata con successo! Verrai reindirizzato alla pagina di login.');
         navigate('/');
       }, 1500);
     } catch (err) {
