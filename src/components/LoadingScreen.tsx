@@ -48,7 +48,7 @@ export function LoadingScreen({ onLoadingComplete }: LoadingScreenProps) {
   }, []);
 
   return (
-    <div className="fixed inset-0 bg-gray-50 flex flex-col items-center justify-center p-4">
+    <div className="fixed inset-0 bg-green-50 flex flex-col items-center justify-center p-4">
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-green-600 mb-2">Trash Hunter</h1>
         <p className="text-gray-600">Caricamento in corso...</p>
@@ -71,15 +71,15 @@ export function LoadingScreen({ onLoadingComplete }: LoadingScreenProps) {
 
       {/* Statistiche animate */}
       <div className="grid grid-cols-3 gap-6 text-center max-w-md">
-        <div className="bg-white p-4 rounded-lg shadow-sm">
+        <div className="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-sm">
           <div className="text-2xl font-bold text-green-600">{stats.reports}</div>
           <div className="text-sm text-gray-600">Segnalazioni</div>
         </div>
-        <div className="bg-white p-4 rounded-lg shadow-sm">
+        <div className="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-sm">
           <div className="text-2xl font-bold text-green-600">{stats.waste} kg</div>
           <div className="text-sm text-gray-600">Rifiuti</div>
         </div>
-        <div className="bg-white p-4 rounded-lg shadow-sm">
+        <div className="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-sm">
           <div className="text-2xl font-bold text-green-600">{stats.co2} kg</div>
           <div className="text-sm text-gray-600">CO₂ Risparmiata</div>
         </div>
