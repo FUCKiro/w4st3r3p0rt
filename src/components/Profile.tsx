@@ -28,6 +28,8 @@ export function Profile({ isOpen, onClose, session, stats }: ProfileProps) {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'stats' | 'reports' | 'impact' | 'achievements'>('stats');
   const [isDark, setIsDark] = useState(false);
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
   const [showInfo, setShowInfo] = useState(false);
 
   useEffect(() => {
@@ -288,6 +290,117 @@ export function Profile({ isOpen, onClose, session, stats }: ProfileProps) {
                     </div>
                   )}
                 </div>
+                
+                {/* Password Reset Form */}
+                <div className="mt-6 pt-6 border-t">
+                  <button
+                    onClick={() => setShowPasswordForm(true)}
+                    className="w-full px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  >
+                    Cambia Password
+                  </button>
+                </div>
+
+                {showPasswordForm && (
+                  <div className="fixed inset-0 bg-black bg-opacity-50 z-[2001] flex items-center justify-center p-4">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-sm w-full">
+                      <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                        Cambia Password
+                      </h3>
+                      <form onSubmit={async (e) => {
+                        e.preventDefault();
+                        
+                        // Validazione password
+                        if (newPassword.length < 8 || 
+                            !/[A-Z]/.test(newPassword) || 
+                            !/[a-z]/.test(newPassword) || 
+                            !/[0-9]/.test(newPassword) || 
+                            !/[!@#$%^&*]/.test(newPassword)) {
+                          setError('La password non soddisfa i requisiti minimi di sicurezza');
+                          return;
+                        }
+
+                        try {
+                          const { error } = await supabase.auth.updateUser({
+                            password: newPassword
+                          });
+
+                          if (error) throw error;
+
+                          alert('Password aggiornata con successo!');
+                          setShowPasswordForm(false);
+                          setNewPassword('');
+                          setError(null);
+                        } catch (err) {
+                          console.error('Error updating password:', err);
+                          setError('Errore durante l\'aggiornamento della password');
+                        }
+                      }}>
+                        <div className="mb-4">
+                          <label htmlFor="new-password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Nuova Password
+                          </label>
+                          <input
+                            id="new-password"
+                            type="password"
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:text-white"
+                            required
+                          />
+                          
+                          {/* Password requirements */}
+                          <div className="mt-2 text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                            <p>La password deve contenere:</p>
+                            <ul className="list-disc pl-5 space-y-1">
+                              <li className={`${newPassword.length >= 8 ? 'text-green-600 dark:text-green-400' : ''}`}>
+                                Almeno 8 caratteri
+                              </li>
+                              <li className={`${/[A-Z]/.test(newPassword) ? 'text-green-600 dark:text-green-400' : ''}`}>
+                                Almeno una lettera maiuscola
+                              </li>
+                              <li className={`${/[a-z]/.test(newPassword) ? 'text-green-600 dark:text-green-400' : ''}`}>
+                                Almeno una lettera minuscola
+                              </li>
+                              <li className={`${/[0-9]/.test(newPassword) ? 'text-green-600 dark:text-green-400' : ''}`}>
+                                Almeno un numero
+                              </li>
+                              <li className={`${/[!@#$%^&*]/.test(newPassword) ? 'text-green-600 dark:text-green-400' : ''}`}>
+                                Almeno un carattere speciale (!@#$%^&*)
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+
+                        {error && (
+                          <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/50 text-red-700 dark:text-red-200 rounded-md text-sm">
+                            {error}
+                          </div>
+                        )}
+
+                        <div className="flex space-x-3">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShowPasswordForm(false);
+                              setNewPassword('');
+                              setError(null);
+                            }}
+                            className="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white rounded-md hover:bg-gray-300 dark:hover:bg-gray-500"
+                          >
+                            Annulla
+                          </button>
+                          <button
+                            type="submit"
+                            className="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                          >
+                            Aggiorna
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                )}
 
                 {/* Theme Toggle */}
                 <div className="mt-6 pt-6 border-t">
