@@ -31,7 +31,11 @@
 html, body, #root {
   height: 100%;
   width: 100%;
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   margin: 0;
   padding: 0;
   overflow: hidden;
@@ -39,12 +43,14 @@ html, body, #root {
   -webkit-overflow-scrolling: touch;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
 /* Safe area padding for profile panel */
 @supports (padding-top: env(safe-area-inset-top)) {
   .fixed.inset-y-0 > div > div {
-    padding-top: calc(env(safe-area-inset-top) + 3rem);
+    padding-top: max(env(safe-area-inset-top), 1rem);
+    padding-bottom: env(safe-area-inset-bottom);
   }
 }
 
@@ -61,6 +67,7 @@ body {
   -webkit-overflow-scrolling: touch;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 

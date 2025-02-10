@@ -210,6 +210,7 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
   const [nearbyReports, setNearbyReports] = useState<WasteReport[]>([]);
   const RADIUS = 250; // 250 meters radius
   const [mapInitialized, setMapInitialized] = useState(false);
+  const [currentZoom, setCurrentZoom] = useState(15);
   const [xpEarned, setXpEarned] = useState<{ xp: number; badges: string[] } | null>(null);
 
   useEffect(() => {
@@ -457,6 +458,34 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
     }
   };
 
+  // Function to determine if a report should be visible at current zoom level
+  const isReportVisible = (report: WasteReport) => {
+    // Show all reports when zoomed in
+    if (currentZoom >= 15) return true;
+    
+    // At zoom 13-14, show medium and larger
+    if (currentZoom >= 13) return report.size >= 1;
+    
+    // At zoom 11-12, show large and very large
+    if (currentZoom >= 11) return report.size >= 2;
+    
+    // At zoom < 11, show only very large (illegal dumps)
+    return report.size === 3;
+  };
+
+  // Map event handler component
+  function MapEventHandler() {
+    const map = useMapEvents({
+      zoomend: () => {
+        setCurrentZoom(map.getZoom());
+      },
+      click: () => {
+        setShowReportForm(false);
+      }
+    });
+    return null;
+  }
+
   return (
     <div className="relative w-full h-full">
       <MapContainer
@@ -468,6 +497,7 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
         zoomControl={false}
         attributionControl={false}
       >
+        <MapEventHandler />
         <MapClickHandler onMapClick={() => setShowReportForm(false)} />
         <TileLayer
           url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"
@@ -494,7 +524,7 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
             }}
           />
         )}
-        {nearbyReports.map((report) => (
+        {nearbyReports.filter(isReportVisible).map((report) => (
           <Marker
             key={report.id}
             position={[report.latitude, report.longitude]}
