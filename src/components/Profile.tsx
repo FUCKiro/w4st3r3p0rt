@@ -30,6 +30,7 @@ export function Profile({ isOpen, onClose, session, stats }: ProfileProps) {
   const [isDark, setIsDark] = useState(false);
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [newPassword, setNewPassword] = useState('');
+  const [avatarSeed, setAvatarSeed] = useState<string | null>(null);
   const [showInfo, setShowInfo] = useState(false);
 
   useEffect(() => {
@@ -77,6 +78,17 @@ export function Profile({ isOpen, onClose, session, stats }: ProfileProps) {
       // Get user metadata
       const { data: metadata } = await supabase.auth.getUser();
       const username = metadata.user?.user_metadata?.username || '';
+
+      // Get avatar seed
+      const { data: avatarData } = await supabase
+        .from('user_stats')
+        .select('avatar_seed')
+        .eq('user_id', user.id)
+        .single();
+
+      if (avatarData?.avatar_seed) {
+        setAvatarSeed(avatarData.avatar_seed);
+      }
 
       // Get user stats
       const { data: stats } = await supabase
@@ -193,7 +205,15 @@ export function Profile({ isOpen, onClose, session, stats }: ProfileProps) {
             <div className="flex items-center">
               <div className="relative">
                 <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center text-green-600 dark:text-green-400 text-2xl font-bold border-2 border-green-200 dark:border-green-700">
-                  {profile?.username ? profile.username.charAt(0).toUpperCase() : '👤'}
+                  {avatarSeed ? (
+                    <img 
+                      src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${avatarSeed}&backgroundColor=ffffff`}
+                      alt="Avatar"
+                      className="w-full h-full rounded-full"
+                    />
+                  ) : (
+                    profile?.username ? profile.username.charAt(0).toUpperCase() : '👤'
+                  )}
                 </div>
                 {profile?.stats?.level ? (
                   <div className="absolute -bottom-2 -right-2 bg-green-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center border-2 border-white">
@@ -289,6 +309,25 @@ export function Profile({ isOpen, onClose, session, stats }: ProfileProps) {
                       </button>
                     </div>
                   )}
+                  <button
+                    onClick={async () => {
+                      const newSeed = Math.random().toString(36).substring(7);
+                      try {
+                        const { error } = await supabase
+                          .from('user_stats')
+                          .update({ avatar_seed: newSeed })
+                          .eq('user_id', session.user.id);
+
+                        if (error) throw error;
+                        setAvatarSeed(newSeed);
+                      } catch (err) {
+                        console.error('Error updating avatar:', err);
+                      }
+                    }}
+                    className="mt-2 w-full px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm"
+                  >
+                    Cambia Avatar
+                  </button>
                 </div>
                 
                 {/* Password Reset Form */}
