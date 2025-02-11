@@ -667,7 +667,8 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
       {!isProfileOpen && (
         <button
           onClick={onProfileClick}
-          className="absolute top-4 left-4 bg-white text-green-600 p-3 rounded-full shadow-lg z-[1000] hover:bg-gray-50 transition-colors"
+          className="absolute left-4 bg-white text-green-600 p-3 rounded-full shadow-lg z-[1000] hover:bg-gray-50 transition-colors"
+          style={{ top: 'calc(env(safe-area-inset-top) + 1rem)' }}
           title={session?.user ? 'Profilo' : 'Accedi'}
         >
           <UserCircle2 className="w-5 h-5" />
@@ -677,7 +678,8 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
       {session?.user && (
         <button
           onClick={() => setShowReportForm(true)}
-          className="absolute top-4 right-4 bg-green-600 text-white p-3 rounded-full shadow-lg z-[1000] hover:bg-green-700 transition-colors"
+          className="absolute right-4 bg-green-600 text-white p-3 rounded-full shadow-lg z-[1000] hover:bg-green-700 transition-colors"
+          style={{ top: 'calc(env(safe-area-inset-top) + 1rem)' }}
           title="Segnala Rifiuti"
         >
           <PlusCircle className="w-5 h-5" />
