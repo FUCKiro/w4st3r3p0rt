@@ -25,7 +25,6 @@ export function Profile({ isOpen, onClose, session, stats }: ProfileProps) {
   const [activeTab, setActiveTab] = useState<'stats' | 'reports' | 'impact' | 'achievements'>('stats');
   const [isDark, setIsDark] = useState(false);
   const [showPasswordForm, setShowPasswordForm] = useState(false);
-  const [newPassword, setNewPassword] = useState('');
   const [avatarSeed, setAvatarSeed] = useState<string | null>(null);
   const [showInfo, setShowInfo] = useState(false);
 
@@ -144,7 +143,7 @@ export function Profile({ isOpen, onClose, session, stats }: ProfileProps) {
 
       if (error) throw error;
 
-      setProfile(prev => prev ? { ...prev, username } : null);
+      setProfile((prev: any) => prev ? { ...prev, username } : null);
       setEditing(false);
       setError(null);
     } catch (error) {

@@ -372,12 +372,11 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
         // Badge per tipo di rifiuto
         const typeCount = await supabase
           .from('waste_reports')
-          .select('count', { count: 'exact' })
+          .select('*', { count: 'exact', head: false })
           .eq('user_id', user.id)
-          .eq('waste_type', type)
-          .single();
+          .eq('waste_type', type);
 
-        if (typeCount?.count >= 5) {
+        if (typeCount.count && typeCount.count >= 5) {
           switch (type) {
             case 0: // Rifiuti Urbani
               if (!newBadges.includes('urban_guardian')) {
