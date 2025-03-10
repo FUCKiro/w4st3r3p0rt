@@ -100,7 +100,6 @@ input, textarea {
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 0;
   margin: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   height: calc(100vh + env(safe-area-inset-top) + env(safe-area-inset-bottom)) !important;
 }
@@ -150,8 +149,8 @@ input, textarea {
 /* Adjust recenter button position on mobile */
 @media (max-width: 640px) {
   .bottom-24 {
-    bottom: calc(6rem + env(safe-area-inset-bottom));
-    right: calc(env(safe-area-inset-right) + 1rem);
+    bottom: calc(8rem + env(safe-area-inset-bottom));
+    right: calc(1rem + env(safe-area-inset-right));
   }
 }
 
