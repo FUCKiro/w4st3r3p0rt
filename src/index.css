@@ -100,7 +100,9 @@ input, textarea {
   left: 0;
   right: 0;
   bottom: 0;
-  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  padding: 0;
+  margin: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  height: calc(100vh + env(safe-area-inset-top) + env(safe-area-inset-bottom)) !important;
 }
 
 /* Optimize for mobile devices */
@@ -132,6 +134,7 @@ input, textarea {
   .leaflet-control-zoom {
     margin-bottom: calc(80px + env(safe-area-inset-bottom)) !important;
     margin-right: calc(env(safe-area-inset-right) + 1rem) !important;
+    margin-bottom: calc(6rem + env(safe-area-inset-bottom)) !important;
   }
   
   .leaflet-control-attribution {
@@ -140,6 +143,7 @@ input, textarea {
     overflow: hidden;
     text-overflow: ellipsis;
     margin-bottom: env(safe-area-inset-bottom) !important;
+    padding-bottom: env(safe-area-inset-bottom);
   }
 }
 
