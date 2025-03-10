@@ -3,7 +3,7 @@ import { X, UserCircle2, PlusCircle, Crosshair, MapPin } from 'lucide-react';
 
 const tutorialSteps = [
   {
-    title: 'Benvenuto su Trash Hunter!',
+    title: 'Benvenuto su Waste Monitor!',
     content: 'Questa app ti aiuta a segnalare e monitorare i rifiuti abbandonati nella tua zona.',
     target: 'body',
     Icon: MapPin
