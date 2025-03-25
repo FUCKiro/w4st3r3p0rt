@@ -100,8 +100,7 @@ input, textarea {
   left: 0;
   right: 0;
   bottom: 0;
-  margin: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-  height: calc(100vh + env(safe-area-inset-top) + env(safe-area-inset-bottom)) !important;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
 /* Optimize for mobile devices */
