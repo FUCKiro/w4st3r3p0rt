@@ -411,7 +411,7 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
 
       setXpEarned({
         xp: 10,
-        badges: Array.from(new Set(newStats.badges)).filter((badge: string) => !stats?.badges?.includes(badge))
+        badges: newStats.badges.filter(badge => !stats?.badges?.includes(badge))
       });
 
       setShowReportForm(false);
