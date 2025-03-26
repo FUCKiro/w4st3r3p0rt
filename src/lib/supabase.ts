@@ -273,12 +273,6 @@ export const BADGES = {
     description: 'Hai aiutato a risolvere 20 segnalazioni',
     icon: '🏛️' as const
   },
-  photo_reporter: {
-    id: 'photo_reporter',
-    name: 'Foto Reporter',
-    description: 'Hai aggiunto foto a 10 segnalazioni',
-    icon: '📸' as const
-  },
   early_bird: {
     id: 'early_bird',
     name: 'Uccello Mattiniero',

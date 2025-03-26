@@ -271,17 +271,6 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
           newBadges.push('team_player');
         }
 
-        // Rapid responder - verifica entro 30 minuti
-        if (report) {
-          const reportTime = new Date(report.created_at).getTime();
-          const now = new Date().getTime();
-          const minutesDiff = (now - reportTime) / (1000 * 60);
-          
-          if (minutesDiff <= 30 && !newBadges.includes('rapid_responder')) {
-            newBadges.push('rapid_responder');
-          }
-        }
-
         await supabase
           .from('user_stats')
           .update({
@@ -352,7 +341,7 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
         const newXP = stats.xp + 10;
         const newLevel = Math.floor(newXP / 100) + 1;
         const newReportsSubmitted = stats.reports_submitted + 1;
-        const newBadges = [...(stats.badges || [])];
+        const newBadges = Array.from(new Set([...(stats.badges || [])]));
 
         // Prima segnalazione
         if (stats.reports_submitted === 0) {
@@ -360,23 +349,23 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
         }
         
         // 5 segnalazioni
-        if (newReportsSubmitted >= 5 && !newBadges.includes('five_reports')) {
+        if (stats.reports_submitted + 1 >= 5 && !newBadges.includes('five_reports')) {
           newBadges.push('five_reports');
         }
         
         // 10 segnalazioni
-        if (newReportsSubmitted >= 10 && !newBadges.includes('ten_reports')) {
+        if (stats.reports_submitted + 1 >= 10 && !newBadges.includes('ten_reports')) {
           newBadges.push('ten_reports');
         }
 
         // Badge per tipo di rifiuto
         const typeCount = await supabase
           .from('waste_reports')
-          .select('*', { count: 'exact', head: false })
+          .select('*', { count: 'exact' })
           .eq('user_id', user.id)
           .eq('waste_type', type);
 
-        if (typeCount.count && typeCount.count >= 5) {
+        if (typeCount.count && typeCount.count + 1 >= 5) {
           switch (type) {
             case 0: // Rifiuti Urbani
               if (!newBadges.includes('urban_guardian')) {
@@ -410,7 +399,7 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
             xp: newXP,
             level: newLevel,
             reports_submitted: newReportsSubmitted,
-            badges: newBadges
+            badges: Array.from(new Set(newBadges))
           })
           .eq('user_id', user.id)
           .select()
@@ -422,7 +411,7 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
 
       setXpEarned({
         xp: 10,
-        badges: newStats.badges.filter((badge: string) => !stats?.badges?.includes(badge))
+        badges: Array.from(new Set(newStats.badges)).filter((badge: string) => !stats?.badges?.includes(badge))
       });
 
       setShowReportForm(false);
