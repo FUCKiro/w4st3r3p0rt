@@ -7,7 +7,7 @@ if (!supabaseUrl || !supabaseKey) {
   throw new Error('Missing Supabase environment variables. Please check your .env file.');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseKey, {
+const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
@@ -15,6 +15,8 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
     flowType: 'pkce'
   }
 });
+
+export { supabase };
 
 export interface User {
   id: string;
@@ -272,6 +274,12 @@ export const BADGES = {
     name: 'Pilastro della Comunità',
     description: 'Hai aiutato a risolvere 20 segnalazioni',
     icon: '🏛️' as const
+  },
+  photo_reporter: {
+    id: 'photo_reporter',
+    name: 'Foto Reporter',
+    description: 'Hai aggiunto foto a 10 segnalazioni',
+    icon: '📸' as const
   },
   early_bird: {
     id: 'early_bird',

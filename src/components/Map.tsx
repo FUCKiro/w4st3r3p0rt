@@ -182,12 +182,19 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
 
   const loadReports = async () => {
     try {
+      if (!supabase) {
+        throw new Error('Supabase client not initialized');
+      }
+
       const { data, error } = await supabase
         .from('waste_reports_with_users')
         .select('*')
         .neq('status', 'resolved');
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
 
       if (userLocation) {
         const filtered = (data || []).filter((report: WasteReport) => {
@@ -202,7 +209,8 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
         setNearbyReports(filtered);
       }
     } catch (error) {
-      console.error('Error loading reports:', error);
+      console.error('Error loading reports:', error instanceof Error ? error.message : error);
+      alert('Errore nel caricamento delle segnalazioni. Riprova più tardi.');
     }
   };
 
@@ -238,7 +246,7 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
 
       const { data: stats } = await supabase
         .from('user_stats')
-        .select('badges')
+        .select('*')
         .eq('user_id', user.id)
         .single();
 
@@ -254,7 +262,7 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
       } else {
         const newXP = stats.xp + 5;
         const newLevel = Math.floor(newXP / 100) + 1;
-        const newBadges: string[] = stats.badges || [];
+        const newBadges = stats.badges ? [...stats.badges] : [];
 
         // Prima verifica
         if (!newBadges.includes('first_verification')) {
@@ -271,19 +279,30 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
           newBadges.push('team_player');
         }
 
+        // Rapid responder - verifica entro 30 minuti
+        if (report) {
+          const reportTime = new Date(report.created_at).getTime();
+          const now = Date.now();
+          const minutesDiff = (now - reportTime) / (1000 * 60);
+          
+          if (minutesDiff <= 30 && !newBadges.includes('rapid_responder') && report.status === 'new') {
+            newBadges.push('rapid_responder');
+          }
+        }
+
         await supabase
           .from('user_stats')
           .update({
             xp: newXP,
             level: newLevel,
             reports_verified: stats.reports_verified + 1,
-            badges: newBadges
+            badges: Array.from(new Set(newBadges))
           })
           .eq('user_id', user.id);
 
         setXpEarned({
           xp: 5,
-          badges: newBadges.filter((badge: string) => !stats.badges?.includes(badge))
+          badges: newBadges.filter(badge => !stats.badges?.includes(badge))
         });
       }
 
@@ -361,11 +380,11 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
         // Badge per tipo di rifiuto
         const typeCount = await supabase
           .from('waste_reports')
-          .select('*', { count: 'exact', head: true })
+          .select('*', { count: 'exact' })
           .eq('user_id', user.id)
           .eq('waste_type', type);
 
-        if (typeCount.count !== null && typeCount.count + 1 >= 5) {
+        if (typeCount.count && typeCount.count + 1 >= 5) {
           switch (type) {
             case 0: // Rifiuti Urbani
               if (!newBadges.includes('urban_guardian')) {
@@ -411,7 +430,7 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
 
       setXpEarned({
         xp: 10,
-        badges: newStats.badges.filter(badge => !stats?.badges?.includes(badge))
+        badges: Array.from(new Set(newStats.badges)).filter((badge: string) => !stats?.badges?.includes(badge))
       });
 
       setShowReportForm(false);
