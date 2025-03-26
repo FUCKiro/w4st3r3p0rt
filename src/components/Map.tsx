@@ -238,7 +238,7 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
 
       const { data: stats } = await supabase
         .from('user_stats')
-        .select('*')
+        .select('badges')
         .eq('user_id', user.id)
         .single();
 
@@ -254,7 +254,7 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
       } else {
         const newXP = stats.xp + 5;
         const newLevel = Math.floor(newXP / 100) + 1;
-        const newBadges = stats.badges ? [...stats.badges] : [];
+        const newBadges: string[] = stats.badges || [];
 
         // Prima verifica
         if (!newBadges.includes('first_verification')) {
@@ -277,13 +277,13 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
             xp: newXP,
             level: newLevel,
             reports_verified: stats.reports_verified + 1,
-            badges: Array.from(new Set(newBadges))
+            badges: newBadges
           })
           .eq('user_id', user.id);
 
         setXpEarned({
           xp: 5,
-          badges: newBadges.filter(badge => !stats.badges?.includes(badge))
+          badges: newBadges.filter((badge: string) => !stats.badges?.includes(badge))
         });
       }
 
