@@ -431,7 +431,7 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
 
       setXpEarned({
         xp: 10,
-        badges: newStats.badges.filter(badge => !stats?.badges?.includes(badge))
+        badges: newStats.badges.filter((badge: string) => !stats?.badges?.includes(badge))
       });
 
       setShowReportForm(false);
@@ -512,7 +512,7 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
       {!isProfileOpen && (
         <button
           onClick={onProfileClick}
-          className="absolute top-8 left-4 bg-white text-green-600 p-3 rounded-full shadow-lg z-[1000] hover:bg-gray-50 transition-colors"
+          className="absolute top-12 left-4 bg-white text-green-600 p-3 rounded-full shadow-lg z-[1000] hover:bg-gray-50 transition-colors"
           title={session?.user ? 'Profilo' : 'Accedi'}
         >
           <UserCircle2 className="w-5 h-5" />
@@ -522,7 +522,7 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
       {session?.user && (
         <button
           onClick={() => setShowReportForm(true)}
-          className="absolute top-8 right-4 bg-green-600 text-white p-3 rounded-full shadow-lg z-[1000] hover:bg-green-700 transition-colors"
+          className="absolute top-12 right-4 bg-green-600 text-white p-3 rounded-full shadow-lg z-[1000] hover:bg-green-700 transition-colors"
           title="Segnala Rifiuti"
         >
           <PlusCircle className="w-5 h-5" />
