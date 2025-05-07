@@ -47,7 +47,7 @@ function LocationMarker() {
   const zoomToShowRadius = () => {
     const radiusInMeters = 250;
     const metersPerPixel = radiusInMeters / (Math.min(map.getSize().x, map.getSize().y) / 2);
-    const zoomLevel = Math.floor(Math.log2(40075016.686 * Math.abs(Math.cos(map.getCenter().lat * Math.PI/180)) / metersPerPixel / 256));
+    const zoomLevel = Math.floor(Math.log2(40075016.686 * Math.abs(Math.cos(map.getCenter().lat * Math.PI/180)) / metersPerPixel / 256)) + 2;
     return Math.min(zoomLevel, 18);
   };
 
@@ -364,29 +364,29 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
         const newBadges = Array.from(new Set([...(stats.badges || [])]));
 
         // Prima segnalazione
-        if (stats.reports_submitted === 0) {
+        if (!newBadges.includes('first_report')) {
           newBadges.push('first_report');
         }
         
         // 5 segnalazioni
-        if (stats.reports_submitted + 1 >= 5 && !newBadges.includes('five_reports')) {
+        if (newReportsSubmitted >= 5 && !newBadges.includes('five_reports')) {
           newBadges.push('five_reports');
         }
         
         // 10 segnalazioni
-        if (stats.reports_submitted + 1 >= 10 && !newBadges.includes('ten_reports')) {
+        if (newReportsSubmitted >= 10 && !newBadges.includes('ten_reports')) {
           newBadges.push('ten_reports');
         }
 
         // Badge per tipo di rifiuto
         const typeCount = await supabase
           .from('waste_reports')
-          .select('*', { count: 'exact', head: true })
+          .select('*', { count: 'exact' })
           .eq('user_id', user.id)
           .eq('waste_type', type);
 
         const count = typeCount.count || 0;
-        if (count + 1 >= 5) {
+        if (count >= 5) {
           switch (type) {
             case 0: // Rifiuti Urbani
               if (!newBadges.includes('urban_guardian')) {
@@ -420,7 +420,7 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
             xp: newXP,
             level: newLevel,
             reports_submitted: newReportsSubmitted,
-            badges: Array.from(new Set(newBadges))
+            badges: newBadges
           })
           .eq('user_id', user.id)
           .select()
@@ -469,7 +469,7 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
     <div className="relative w-full h-full">
       <MapContainer
         center={[41.9028, 12.4964]}
-        zoom={6}
+        zoom={15}
         className="w-full h-full relative map-container"
         maxBounds={[[-90, -180], [90, 180]]}
         minZoom={3}
