@@ -29,7 +29,7 @@
 
 /* Ensure full viewport height usage */
 html, body, #root {
-  height: 100%;
+  height: 100dvh;
   width: 100%;
   position: fixed;
   top: 0;
@@ -49,7 +49,8 @@ html, body, #root {
 /* Safe area padding for profile panel */
 @supports (padding-top: env(safe-area-inset-top)) {
   .fixed.inset-y-0 > div > div {
-    padding-top: max(env(safe-area-inset-top), 1rem);
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
   }
 }
 
@@ -90,7 +91,7 @@ input, textarea {
 
 /* Ensure map container takes full height */
 .leaflet-container {
-  height: 100vh !important;
+  height: 100dvh !important;
   width: 100vw !important;
   touch-action: none;
   position: fixed;
@@ -98,7 +99,8 @@ input, textarea {
   left: 0;
   right: 0;
   bottom: 0;
-  padding-top: env(safe-area-inset-top);
+  padding-top: env(safe-area-inset-top, 0);
+  padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
 /* Optimize for mobile devices */

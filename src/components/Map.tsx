@@ -144,6 +144,7 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
   const [mapInitialized, setMapInitialized] = useState(false);
   const [currentZoom, setCurrentZoom] = useState(15);
   const [xpEarned, setXpEarned] = useState<{ xp: number; badges: string[] } | null>(null);
+  const [showThankYou, setShowThankYou] = useState(false);
 
   useEffect(() => {
     loadReports();
@@ -442,6 +443,11 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
           detail: { stats: newStats }
         }));
       }
+      
+      setShowThankYou(true);
+      setTimeout(() => {
+        setShowThankYou(false);
+      }, 3000);
     } catch (error) {
       console.error('Error submitting report:', error);
     }
@@ -543,6 +549,13 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
           badges={xpEarned.badges}
           onClose={() => setXpEarned(null)}
         />
+      )}
+      
+      {showThankYou && (
+        <div className="fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded-full shadow-lg z-[2001] animate-fade-in flex items-center space-x-1.5 text-sm">
+          <span>🌍</span>
+          <span>Grazie!</span>
+        </div>
       )}
     </div>
   );
