@@ -17,7 +17,7 @@ export function XPPopup({ xp, badges = [], onClose }: XPPopupProps) {
   }, [onClose]);
 
   return (
-    <div className="fixed bottom-24 right-4 z-[2001] animate-fade-in transform transition-all duration-300">
+    <div className="fixed bottom-32 right-4 z-[2001] animate-fade-in transform transition-all duration-300">
       <div className="bg-green-600 dark:bg-green-700 text-white rounded-full shadow-lg py-2 px-4 flex items-center space-x-2">
         <Trophy className="w-5 h-5 animate-bounce" />
         <span className="font-bold">+{xp} XP</span>
