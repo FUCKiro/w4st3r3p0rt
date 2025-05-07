@@ -29,7 +29,7 @@
 
 /* Ensure full viewport height usage */
 html, body, #root {
-  height: 100dvh;
+  height: 100%;
   width: 100%;
   position: fixed;
   top: 0;
@@ -91,16 +91,15 @@ input, textarea {
 
 /* Ensure map container takes full height */
 .leaflet-container {
-  height: 100dvh !important;
+  height: 100% !important;
   width: 100vw !important;
   touch-action: none;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: env(safe-area-inset-bottom, 0);
   padding-top: env(safe-area-inset-top, 0);
-  padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
 /* Optimize for mobile devices */
