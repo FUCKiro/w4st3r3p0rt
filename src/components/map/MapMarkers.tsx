@@ -30,11 +30,11 @@ const getWasteIcon = (type: number) => {
 
   return divIcon({
     className: 'custom-marker',
-    html: `<div style="background-color: ${colors[type]}; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-center; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+    html: `<div style="background-color: ${colors[type]}; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-center; border: 3px solid white; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);">
             <span style="font-size: 16px;">${icons[type]}</span>
            </div>`,
-    iconSize: [32, 32],
-    iconAnchor: [16, 16],
+    iconSize: [36, 36],
+    iconAnchor: [18, 18],
   });
 };
 

@@ -381,11 +381,11 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
         // Badge per tipo di rifiuto
         const typeCount = await supabase
           .from('waste_reports')
-          .select('*', { count: 'exact' })
+          .select('*', { count: 'exact', head: true })
           .eq('user_id', user.id)
           .eq('waste_type', type);
 
-        const count = typeCount.count || 0;
+        const count = (typeCount.count || 0) + 1; // Include current report
         if (count >= 5) {
           switch (type) {
             case 0: // Rifiuti Urbani
@@ -420,7 +420,7 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
             xp: newXP,
             level: newLevel,
             reports_submitted: newReportsSubmitted,
-            badges: newBadges
+            badges: Array.from(new Set(newBadges)) // Ensure unique badges
           })
           .eq('user_id', user.id)
           .select()
