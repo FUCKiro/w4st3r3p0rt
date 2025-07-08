@@ -7,6 +7,7 @@ import { ProfileStats } from './profile/ProfileStats';
 import { ProfileReports } from './profile/ProfileReports';
 import { ProfileImpact } from './profile/ProfileImpact';
 import { ProfileAchievements } from './profile/ProfileAchievements';
+import { ProfileContent } from './profile/ProfileContent';
 import { getUserTitle } from '../lib/supabase';
 
 interface ProfileProps {
