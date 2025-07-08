@@ -198,7 +198,6 @@ export function Profile({ isOpen, onClose, session, stats }: ProfileProps) {
               />
             )}
           </div>
-        </div>
       </div>
     </>
   );
