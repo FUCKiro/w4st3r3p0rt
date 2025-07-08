@@ -43,7 +43,7 @@ export function ProfileStats({ stats }: ProfileStatsProps) {
             {totalReports}
           </div>
           <div className="text-sm font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">
-            Total<br />Reports
+            Totale<br />Segnalazioni
           </div>
         </div>
       </div>

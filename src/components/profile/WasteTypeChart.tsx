@@ -29,7 +29,7 @@ export function WasteTypeChart({ reports }: WasteTypeChartProps) {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm">
       <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
-        Waste Type
+        Tipo di Rifiuto
       </h3>
       
       {/* Progress Bar */}
@@ -55,7 +55,7 @@ export function WasteTypeChart({ reports }: WasteTypeChartProps) {
               style={{ backgroundColor: segment.color }}
             />
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              {segment.name.split(' ')[0]}
+              {segment.name.split(' ')[0]} {segment.name.split(' ')[1] && segment.name.split(' ')[1]}
             </span>
           </div>
         ))}

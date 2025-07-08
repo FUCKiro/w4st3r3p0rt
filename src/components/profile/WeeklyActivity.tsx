@@ -36,7 +36,7 @@ export function WeeklyActivity({ reports }: WeeklyActivityProps) {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm">
       <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
-        Weekly Activity
+        Attività Settimanale
       </h3>
       
       <div className="flex items-end justify-between h-24 space-x-2">

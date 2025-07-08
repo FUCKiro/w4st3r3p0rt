@@ -127,25 +127,25 @@ export const SIZE_MULTIPLIER = {
 export const BADGES = {
   first_report: {
     id: 'first_report',
-    name: 'Sentinella Verde',
+    name: 'Cacciatore di Plastica',
     description: 'Hai fatto la tua prima segnalazione',
     icon: '🌱' as const
   },
   five_reports: {
     id: 'five_reports',
-    name: 'Guardiano Ambientale',
+    name: 'Campione della Pulizia',
     description: 'Hai fatto 5 segnalazioni',
     icon: '👀' as const
   },
   ten_reports: {
     id: 'ten_reports',
-    name: 'Difensore della Terra',
+    name: 'Guerriero Verde',
     description: 'Hai fatto 10 segnalazioni',
     icon: '🛡️' as const
   },
   first_verification: {
     id: 'first_verification',
-    name: 'Verificatore Verde',
+    name: 'Impatto Globale',
     description: 'Hai verificato la tua prima segnalazione',
     icon: '✅' as const
   },

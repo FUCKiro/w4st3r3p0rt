@@ -11,16 +11,16 @@ export function Achievements({ badges }: AchievementsProps) {
   const lockedColor = 'bg-gray-200 dark:bg-gray-700';
 
   const achievements = [
-    { id: 'first_report', name: 'Plastic Hunter', unlocked: badges.includes('first_report') },
-    { id: 'five_reports', name: 'Cleanup Champion', unlocked: badges.includes('five_reports') },
-    { id: 'eco_warrior', name: 'Eco Warrior', unlocked: badges.includes('eco_warrior') },
-    { id: 'team_player', name: 'Global Impact', unlocked: badges.includes('team_player') }
+    { id: 'first_report', name: 'Cacciatore di Plastica', unlocked: badges.includes('first_report') },
+    { id: 'five_reports', name: 'Campione della Pulizia', unlocked: badges.includes('five_reports') },
+    { id: 'eco_warrior', name: 'Guerriero Verde', unlocked: badges.includes('eco_warrior') },
+    { id: 'team_player', name: 'Impatto Globale', unlocked: badges.includes('team_player') }
   ];
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm">
       <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
-        Achievements
+        Obiettivi
       </h3>
       
       <div className="grid grid-cols-4 gap-4">
@@ -48,7 +48,7 @@ export function Achievements({ badges }: AchievementsProps) {
       <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between mb-3">
           <span className="text-lg font-bold text-gray-900 dark:text-white">
-            LEVEL {Math.floor((badges.length * 20) / 100) + 1}
+            LIVELLO {Math.floor((badges.length * 20) / 100) + 1}
           </span>
           <div className="flex space-x-1">
             {[1, 2, 3].map((level) => (
