@@ -8,7 +8,7 @@ interface WeeklyActivityProps {
 export function WeeklyActivity({ reports }: WeeklyActivityProps) {
   // Get last 7 days activity
   const getWeeklyData = () => {
-    const days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+    const days = ['D', 'L', 'M', 'M', 'G', 'V', 'S']; // Domenica, Lunedì, Martedì, Mercoledì, Giovedì, Venerdì, Sabato
     const today = new Date();
     const weekData = [];
 
