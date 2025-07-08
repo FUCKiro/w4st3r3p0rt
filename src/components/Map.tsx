@@ -54,15 +54,16 @@ function LocationMarker() {
   useEffect(() => {
     if (!initialized) {
       map.locate({
-        setView: false,
+        setView: true,
         enableHighAccuracy: true,
-        timeout: 10000,
+        timeout: 15000,
         maximumAge: 0
       }).on("locationfound", (e: LocationEvent) => {
         setPosition([e.latlng.lat, e.latlng.lng]);
         map.setView(e.latlng, zoomToShowRadius());
         setInitialized(true);
       }).on("locationerror", (e: LeafletEvent) => {
+        console.warn('Geolocation error:', e);
         // Fallback silenzioso su Roma
         map.flyTo([41.9028, 12.4964], zoomToShowRadius());
         setInitialized(true);
@@ -104,8 +105,8 @@ function RecenterButton() {
     map.locate({
       setView: true,
       enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 0
+      timeout: 15000,
+      maximumAge: 30000
     })
     .on("locationfound", (e: LocationEvent) => {
       const zoom = zoomToShowRadius();
@@ -114,7 +115,23 @@ function RecenterButton() {
       });
     })
     .on("locationerror", () => {
-      alert('Impossibile recuperare la posizione. Verifica che la geolocalizzazione sia attiva.');
+      // Prova con opzioni meno stringenti
+      map.locate({
+        setView: true,
+        enableHighAccuracy: false,
+        timeout: 30000,
+        maximumAge: 300000
+      })
+      .on("locationfound", (e: LocationEvent) => {
+        const zoom = zoomToShowRadius();
+        map.flyTo(e.latlng, zoom, {
+          duration: 1
+        });
+        alert('Posizione approssimativa ottenuta. Per maggiore precisione, assicurati che il GPS sia attivo.');
+      })
+      .on("locationerror", () => {
+        alert('Impossibile recuperare la posizione. Verifica che la geolocalizzazione sia attiva e che ti trovi in un\'area con buona copertura GPS.');
+      });
     });
   };
 
@@ -173,6 +190,11 @@ export function Map({ onProfileClick, isProfileOpen = false, session }: MapProps
           alert(errorMessage);
           // Fallback su Roma come posizione di default
           setUserLocation([41.9028, 12.4964]);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 60000
         }
       );
     } else {
